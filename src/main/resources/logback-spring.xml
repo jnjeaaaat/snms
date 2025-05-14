@@ -1,0 +1,58 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <springProperty name="LOG_PATH" source="logging.file.path" defaultValue="logs"/>
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){green} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <!-- DEV 환경 -->
+    <springProfile name="dev">
+        <property name="LOG_DIR" value="${LOG_PATH}/dev"/>
+        <appender name="FILE_DEV" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/application.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>7</maxHistory> <!-- 7일 보관 -->
+            </rollingPolicy>
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE_DEV"/>
+        </root>
+    </springProfile>
+
+    <!-- PROD 환경 -->
+    <springProfile name="prod">
+        <property name="LOG_DIR" value="${LOG_PATH}/prod"/>
+        <appender name="FILE_PROD" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/application.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>60</maxHistory> <!-- 60일 보관 -->
+            </rollingPolicy>
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE_PROD"/>
+        </root>
+    </springProfile>
+
+    <!-- 공통 설정 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
