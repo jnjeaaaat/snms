@@ -1,4 +1,4 @@
-package org.jnjeaaaat.snms.global.auth.exception;
+package org.jnjeaaaat.snms.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

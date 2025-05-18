@@ -1,8 +1,8 @@
-package org.jnjeaaaat.snms.global.auth.exception.dto;
+package org.jnjeaaaat.snms.global.exception.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jnjeaaaat.snms.global.auth.exception.ErrorCode;
+import org.jnjeaaaat.snms.global.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 
 @Getter
