@@ -1,16 +1,12 @@
 package org.jnjeaaaat.snms.global.exception.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.jnjeaaaat.snms.global.exception.ErrorCode;
 import org.springframework.http.ResponseEntity;
 
-@Getter
-@RequiredArgsConstructor
-public class ErrorResponse {
-
-    private final ErrorCode errorCode;
-    private final String message;
+public record ErrorResponse(
+        ErrorCode errorCode,
+        String message
+) {
 
     public static ResponseEntity<ErrorResponse> of(ErrorCode errorCode, String message) {
         return ResponseEntity.status(errorCode.getHttpStatus().value())
