@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
-import org.jnjeaaaat.snms.domain.auth.service.AutoService;
+import org.jnjeaaaat.snms.domain.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +21,7 @@ import static org.jnjeaaaat.snms.global.util.LogUtils.logInfo;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AutoService autoService;
+    private final AuthService authService;
 
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponse> signUp(
@@ -30,7 +30,7 @@ public class AuthController {
 
         logInfo(request, "회원가입 요청");
 
-        SignUpResponse signUpResponse = autoService.signUp(signUpRequest);
+        SignUpResponse signUpResponse = authService.signUp(signUpRequest);
 
         URI location = UriComponentsBuilder.fromPath("/api/users/{id}").buildAndExpand(signUpResponse.id()).toUri();
 
