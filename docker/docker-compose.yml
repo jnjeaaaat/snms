@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:latest
+    container_name: snms-mysql
+    ports:
+      - "3305:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: snms
+      MYSQL_USER: mysnms
+      MYSQL_PASSWORD: mysnmspw
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - snms-server
+
+volumes:
+  mysql-data:
+
+networks:
+  snms-server:
+    driver: bridge

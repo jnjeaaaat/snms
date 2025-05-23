@@ -1,0 +1,26 @@
+[[Auth-API]]
+== Auth API
+
+[[회원가입]]
+=== [POST] /api/auth/sign-up
+
+[[Request]]
+==== `Request`
+operation::auth/sign-up/success/[snippets='http-request']
+operation::auth/sign-up/success/[snippets='request-fields']
+
+[[Response]]
+==== `Success Response`
+operation::auth/sign-up/success/[snippets='http-response,response-fields']
+
+==== `Failure Response`
+===== `Duplicated Email`
+operation::auth/sign-up/duplicated_email/[snippets='http-response']
+
+===== `Unmatched Password`
+operation::auth/sign-up/unmatched_password/[snippets='http-response']
+
+===== `Unmatched Default File`
+operation::auth/sign-up/unmatched_default_file/[snippets='http-response']
+
+operation::auth/sign-up/duplicated_email/[snippets='response-fields']
