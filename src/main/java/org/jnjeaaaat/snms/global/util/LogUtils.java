@@ -1,7 +1,6 @@
 package org.jnjeaaaat.snms.global.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -9,10 +8,6 @@ public class LogUtils {
 
     private static String requestUri = "";
     private static String requestMethod = "";
-
-    public static void logInfo(String description) {
-        log.info("{}", description);
-    }
 
     public static void logInfo(HttpServletRequest request, String description) {
         requestUri = request.getRequestURI();
