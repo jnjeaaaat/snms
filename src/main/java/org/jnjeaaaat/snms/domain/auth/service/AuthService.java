@@ -24,7 +24,7 @@ public class AuthService {
     public SignUpResponse signUp(SignUpRequest request) {
 
         validateExistEmail(request.email());
-        validatePassword(request.password(), request.rePassword());
+        validatePassword(request.password(), request.confirmPassword());
         validateDefaultFile(request.profileImgUrl());
 
         User savedUser = userRepository.save(
@@ -45,8 +45,8 @@ public class AuthService {
         }
     }
 
-    private void validatePassword(String password, String rePassword) {
-        if (!password.equals(rePassword)) {
+    private void validatePassword(String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
             throw new UnmatchedPassword();
         }
     }

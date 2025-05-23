@@ -9,7 +9,7 @@ public record SignUpRequest(
 
         String password,
 
-        String rePassword,
+        String confirmPassword,
 
         String nickname,
 
