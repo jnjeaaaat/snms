@@ -7,17 +7,29 @@ services:
     ports:
       - "3305:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpw
-      MYSQL_DATABASE: snms
-      MYSQL_USER: mysnms
-      MYSQL_PASSWORD: mysnmspw
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - snms-server
 
+  redis:
+    image: redis:7.0-alpine
+    container_name: snms-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis-data:/data
+    networks:
+      - snms-server
+
 volumes:
   mysql-data:
+  redis-data:
 
 networks:
   snms-server:

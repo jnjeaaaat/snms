@@ -1,4 +1,4 @@
-package org.jnjeaaaat.snms.domain.user.entity;
+package org.jnjeaaaat.snms.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.jnjeaaaat.snms.domain.user.type.LoginType;
-import org.jnjeaaaat.snms.domain.user.type.UserRole;
+import org.jnjeaaaat.snms.domain.member.type.LoginType;
+import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 import org.jnjeaaaat.snms.global.entity.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is null")
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
 
     private static final String DEFAULT_PASSWORD = "qwER12!@";
 
@@ -43,7 +43,7 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private MemberRole role;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -52,7 +52,7 @@ public class User extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    protected User(String email, String password, String nickname, String profileImgUrl, UserRole role, LoginType loginType) {
+    protected Member(String email, String password, String nickname, String profileImgUrl, MemberRole role, LoginType loginType) {
         this.email = email;
         this.password = password == null ? DEFAULT_PASSWORD : password;
         this.nickname = nickname;

@@ -12,8 +12,10 @@ public enum ErrorCode {
 
     INVALID_REQUEST(BAD_REQUEST, "유효하지 않은 요청입니다."),
     DUPLICATE_EMAIL(BAD_REQUEST, "이미 가입된 이메일 입니다."),
-    UNMATCHED_PASSWORD(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    UNMATCHED_PASSWORD(BAD_REQUEST, "재확인 비밀번호가 다릅니다."),
     UNMATCHED_DEFAULT_FILE(BAD_REQUEST, "기본 프로필 사진이 아닙니다."),
+
+    WRONG_PASSWORD(BAD_REQUEST, "비밀번호가 일치하지 않습니다.")
 
     ;
 

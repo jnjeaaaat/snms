@@ -5,10 +5,10 @@ import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
-import org.jnjeaaaat.snms.domain.user.entity.User;
-import org.jnjeaaaat.snms.domain.user.repository.UserRepository;
-import org.jnjeaaaat.snms.domain.user.type.LoginType;
-import org.jnjeaaaat.snms.domain.user.type.UserRole;
+import org.jnjeaaaat.snms.domain.member.entity.Member;
+import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
+import org.jnjeaaaat.snms.domain.member.type.LoginType;
+import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.mockito.BDDMockito.given;
 class AuthServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Mock
     PasswordEncoder passwordEncoder;
@@ -45,17 +45,17 @@ class AuthServiceTest {
                 "qwER12!@", "qwER12!@", "test1", "/default.jpg");
 
 
-        User mockUser = createMockUser(
+        Member mockUser = createMockUser(
         );
 
         @Test
         @DisplayName("[성공] 로컬 회원가입 성공 user id 반환")
         void success_sign_up_when_valid_request() {
             //given
-            given(userRepository.existsByEmail(request.email())).willReturn(false);
+            given(memberRepository.existsByEmail(request.email())).willReturn(false);
             given(passwordEncoder.encode(request.password())).willReturn("newEncodedPassword");
 
-            given(userRepository.save(any(User.class))).willReturn(mockUser);
+            given(memberRepository.save(any(Member.class))).willReturn(mockUser);
 
             //when
             SignUpResponse response = authService.signUp(request);
@@ -68,7 +68,7 @@ class AuthServiceTest {
         @DisplayName("[실패] 로컬 회원가입 - 중복 이메일 DuplicateEmail")
         void failed_sign_up_when_DuplicateEmail() {
             //given
-            given(userRepository.existsByEmail(request.email())).willReturn(true);
+            given(memberRepository.existsByEmail(request.email())).willReturn(true);
 
             //when
             //then
@@ -106,19 +106,19 @@ class AuthServiceTest {
         }
     }
 
-    private User createMockUser() {
-        User user = User.builder()
+    private Member createMockUser() {
+        Member member = Member.builder()
                 .email("test@gmail.com")
                 .password("newEncodedPassword")
                 .nickname("test1")
                 .profileImgUrl("/default.jpg")
-                .role(UserRole.ROLE_USER)
+                .role(MemberRole.ROLE_USER)
                 .loginType(LoginType.LOCAL)
                 .build();
 
-        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(member, "id", 1L);
 
-        return user;
+        return member;
     }
 
 }

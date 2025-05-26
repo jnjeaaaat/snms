@@ -2,14 +2,24 @@ package org.jnjeaaaat.snms.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
+import org.jnjeaaaat.snms.domain.auth.entity.RedisToken;
 import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
-import org.jnjeaaaat.snms.domain.user.entity.User;
-import org.jnjeaaaat.snms.domain.user.repository.UserRepository;
-import org.jnjeaaaat.snms.domain.user.type.LoginType;
+import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
+import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
+import org.jnjeaaaat.snms.domain.member.entity.Member;
+import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
+import org.jnjeaaaat.snms.domain.member.type.LoginType;
+import org.jnjeaaaat.snms.global.security.CustomUserDetailsService;
+import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,29 +28,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTokenRepository redisTokenRepository;
 
+    // 로컬 회원가입
     public SignUpResponse signUp(SignUpRequest request) {
 
         validateExistEmail(request.email());
         validatePassword(request.password(), request.confirmPassword());
         validateDefaultFile(request.profileImgUrl());
 
-        User savedUser = userRepository.save(
+        Member savedMember = memberRepository.save(
                 SignUpRequest.toEntity(
                         request,
                         passwordEncoder.encode(request.password()),
                         LoginType.LOCAL)
         );
 
-        log.info("회원가입 성공 user_id : {}", savedUser.getId());
+        log.info("회원가입 성공 user_id : {}", savedMember.getId());
 
-        return SignUpResponse.fromEntity(savedUser);
+        return SignUpResponse.fromEntity(savedMember);
     }
 
     private void validateExistEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmail(email)) {
             throw new DuplicateEmailException();
         }
     }
@@ -52,11 +66,53 @@ public class AuthService {
     }
 
     private void validateDefaultFile(String profileImgUrl) {
-
         String defaultFilename = "/default.jpg";
 
         if (!profileImgUrl.endsWith(defaultFilename)) {
             throw new UnmatchedDefaultFile();
+        }
+    }
+
+    // 로그인
+    public SignInResponse signIn(SignInRequest request) {
+        // member 확인 후 userDetails 추출
+        UserDetails userDetails = getUserDetails(request.email());
+
+        validatePasswordMatch(request.password(), userDetails.getPassword());
+
+        // token 생성을 위한 authentication 생성
+        Authentication authentication = createAuthentication(userDetails);
+
+        // token 생성
+        String accessToken = jwtTokenProvider.createAccessToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
+        // Redis 저장
+        RedisToken redisToken = new RedisToken(
+                userDetails.getUsername(),
+                refreshToken,
+                accessToken
+        );
+        redisTokenRepository.save(redisToken);
+
+        return new SignInResponse(accessToken);
+    }
+
+    private UserDetails getUserDetails(String email) {
+        return customUserDetailsService.loadUserByUsername(email);
+    }
+
+    private Authentication createAuthentication(UserDetails userDetails) {
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                userDetails.getPassword(),
+                userDetails.getAuthorities()
+        );
+    }
+
+    private void validatePasswordMatch(String password, String encodedPassword) {
+        if (!passwordEncoder.matches(password, encodedPassword)) {
+            throw new WrongPassword();
         }
     }
 }
