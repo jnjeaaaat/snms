@@ -3,6 +3,7 @@ package org.jnjeaaaat.snms.global.security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
+import org.jnjeaaaat.snms.domain.member.exception.NotFoundMember;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -24,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(email)
                 .map(this::createUser)
-                .orElseThrow();
+                .orElseThrow(NotFoundMember::new);
     }
 
     private User createUser(Member member) {
