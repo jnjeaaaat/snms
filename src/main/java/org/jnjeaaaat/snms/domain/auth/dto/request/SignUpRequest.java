@@ -1,8 +1,8 @@
 package org.jnjeaaaat.snms.domain.auth.dto.request;
 
-import org.jnjeaaaat.snms.domain.user.entity.User;
-import org.jnjeaaaat.snms.domain.user.type.LoginType;
-import org.jnjeaaaat.snms.domain.user.type.UserRole;
+import org.jnjeaaaat.snms.domain.member.entity.Member;
+import org.jnjeaaaat.snms.domain.member.type.LoginType;
+import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 
 public record SignUpRequest(
         String email,
@@ -16,14 +16,14 @@ public record SignUpRequest(
         String profileImgUrl
 ) {
 
-    public static User toEntity(SignUpRequest request, String password, LoginType loginType) {
-        return User.builder()
+    public static Member toEntity(SignUpRequest request, String password, LoginType loginType) {
+        return Member.builder()
                 .email(request.email())
                 .password(password)
                 .nickname(request.nickname())
                 .profileImgUrl(request.profileImgUrl())
                 .loginType(loginType)
-                .role(UserRole.ROLE_USER)
+                .role(MemberRole.ROLE_USER)
                 .build();
     }
 }

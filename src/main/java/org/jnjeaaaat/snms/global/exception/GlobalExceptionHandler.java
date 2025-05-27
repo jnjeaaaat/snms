@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import static org.jnjeaaaat.snms.global.util.LogUtil.logError;
+
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,13 +18,6 @@ public class GlobalExceptionHandler {
         logError(request, e);
 
         return ErrorResponse.of(e.getErrorCode(), e.getErrorMessage());
-    }
-
-    private void logError(HttpServletRequest request, CustomException e) {
-        String requestUri = request.getRequestURI();
-        String requestMethod = request.getMethod();
-
-        log.error("[{}] {} : {}", requestMethod, requestUri, e.getErrorMessage());
     }
 
 }

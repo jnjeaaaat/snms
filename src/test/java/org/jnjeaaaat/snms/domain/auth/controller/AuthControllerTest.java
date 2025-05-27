@@ -2,12 +2,16 @@ package org.jnjeaaaat.snms.domain.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
+import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
 import org.jnjeaaaat.snms.domain.auth.service.AuthService;
+import org.jnjeaaaat.snms.domain.member.exception.NotFoundMember;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -184,6 +188,90 @@ class AuthControllerTest {
                             errorResponseSnippet
                     ));
         }
+    }
+
+    @Nested
+    @DisplayName("로컬 로그인")
+    class SignInTest {
+
+        SignInRequest request = new SignInRequest("test@gmail.com", "qwER12!@");
+        String requestBody = objectMapper.writeValueAsString(request);
+        SignInResponse signInResponse =
+                new SignInResponse("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJzbm1zIiwiaWF0IjoxNzQ4MjY5NDE4LCJleHAiOjE3NDgyNzEyMTh9.9h1Cuq3yNV2yHAzU3K-8glhVjeJpaYKF1xbNTC0oX2dsj5Lmm-ihWHhnBIaiktpkArg4nzsCZXXjj83NEGsmyQ");
+
+        SignInTest() throws JsonProcessingException {
+        }
+
+        @Test
+        @DisplayName("[성공] 로컬 로그인")
+        void success_sign_in() throws Exception {
+            //given
+            //when
+            doReturn(signInResponse).when(authService).signIn(request);
+            //then
+            mockMvc.perform(post("/api/auth/sign-in")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andDo(document("auth/sign-in/success",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            requestFields(
+                                    fieldWithPath("email").description("사용자 이메일"),
+                                    fieldWithPath("password").description("사용자 비밀번호")
+                            ),
+                            responseFields(
+                                    fieldWithPath("accessToken").description("엑세스 토큰")
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 로컬 로그인 - 회원 없음")
+        void sign_in_NotFoundMember() throws Exception {
+            //given
+            //when
+            doThrow(new NotFoundMember()).when(authService).signIn(request);
+            //then
+            mockMvc.perform(post("/api/auth/sign-in")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                    )
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andDo(document("auth/sign-in/not_found_member",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 로컬 로그인 - 비밀번호 인증 실패")
+        void sign_in_WrongPassword() throws Exception {
+            //given
+            //when
+            doThrow(new WrongPassword()).when(authService).signIn(request);
+            //then
+            mockMvc.perform(post("/api/auth/sign-in")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+                    )
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andDo(document("auth/sign-in/wrong_password",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+
     }
 
 }

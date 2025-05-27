@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LogUtils {
+public class LogUtil {
 
     private static String requestUri = "";
     private static String requestMethod = "";
