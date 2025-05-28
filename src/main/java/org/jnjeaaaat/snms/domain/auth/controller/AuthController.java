@@ -54,8 +54,6 @@ public class AuthController {
         SignInResponse signInResponse = authService.signIn(signInRequest);
         CookieUtil.addCookie(response, COOKIE_NAME, signInResponse.accessToken(), COOKIE_MAX_AGE);
 
-        return ResponseEntity.ok(
-                authService.signIn(signInRequest)
-        );
+        return ResponseEntity.ok(signInResponse);
     }
 }

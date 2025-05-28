@@ -1,11 +1,10 @@
 package org.jnjeaaaat.snms.domain.auth.dto.request;
 
 import org.jnjeaaaat.snms.domain.member.entity.Member;
-import org.jnjeaaaat.snms.domain.member.type.LoginType;
 import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 
 public record SignUpRequest(
-        String email,
+        String uid,
 
         String password,
 
@@ -13,16 +12,18 @@ public record SignUpRequest(
 
         String nickname,
 
+        String phoneNum,
+
         String profileImgUrl
 ) {
 
-    public static Member toEntity(SignUpRequest request, String password, LoginType loginType) {
+    public static Member toEntity(SignUpRequest request, String password) {
         return Member.builder()
-                .email(request.email())
+                .uid(request.uid())
                 .password(password)
                 .nickname(request.nickname())
+                .phoneNum(request.phoneNum())
                 .profileImgUrl(request.profileImgUrl())
-                .loginType(loginType)
                 .role(MemberRole.ROLE_USER)
                 .build();
     }

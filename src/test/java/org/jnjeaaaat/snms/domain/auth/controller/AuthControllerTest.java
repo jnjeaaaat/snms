@@ -6,7 +6,7 @@ import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
-import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
+import org.jnjeaaaat.snms.domain.auth.exception.DuplicateUidException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
 import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
@@ -81,8 +81,8 @@ class AuthControllerTest {
     @DisplayName("로컬 회원 가입")
     class SignUpTest {
 
-        SignUpRequest request = new SignUpRequest("test@gmail.com",
-                "qwER12!@", "qwER12!@", "test1", "default.jpg");
+        SignUpRequest request = new SignUpRequest("testId",
+                "qwER12!@", "qwER12!@", "test1", "010-1234-1234", "default.jpg");
         String requestBody = objectMapper.writeValueAsString(request);
         SignUpResponse response = new SignUpResponse(1L);
 
@@ -111,10 +111,11 @@ class AuthControllerTest {
                                     headerWithName("Location").description("회원 정보 조회 URI")
                             ),
                             requestFields(
-                                    fieldWithPath("email").description("가입 이메일"),
+                                    fieldWithPath("uid").description("가입 아이디"),
                                     fieldWithPath("password").description("비밀번호"),
                                     fieldWithPath("confirmPassword").description("비밀번호 확인"),
                                     fieldWithPath("nickname").description("닉네임"),
+                                    fieldWithPath("phoneNum").description("핸드폰 번호"),
                                     fieldWithPath("profileImgUrl").description("기본 프로필 이미지")
                             ),
                             responseFields(
@@ -126,11 +127,11 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("[실패] 로컬 회원가입 - 중복 이메일")
-        void sign_up_DuplicatedEmail() throws Exception {
+        @DisplayName("[실패] 로컬 회원가입 - 중복 아이디")
+        void sign_up_DuplicatedUid() throws Exception {
             //given
             //when
-            doThrow(new DuplicateEmailException()).when(authService).signUp(request);
+            doThrow(new DuplicateUidException()).when(authService).signUp(request);
             //then
             mockMvc.perform(post("/api/auth/sign-up")
                             .with(csrf())
@@ -139,7 +140,7 @@ class AuthControllerTest {
                     )
                     .andExpect(status().isBadRequest())
                     .andDo(print())
-                    .andDo(document("auth/sign-up/duplicated_email",
+                    .andDo(document("auth/sign-up/duplicated_uid",
                             preprocessRequest(prettyPrint()),
                             commonResponsePreprocessor,
                             errorResponseSnippet
@@ -194,7 +195,7 @@ class AuthControllerTest {
     @DisplayName("로컬 로그인")
     class SignInTest {
 
-        SignInRequest request = new SignInRequest("test@gmail.com", "qwER12!@");
+        SignInRequest request = new SignInRequest("testId", "qwER12!@");
         String requestBody = objectMapper.writeValueAsString(request);
         SignInResponse signInResponse =
                 new SignInResponse("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJzbm1zIiwiaWF0IjoxNzQ4MjY5NDE4LCJleHAiOjE3NDgyNzEyMTh9.9h1Cuq3yNV2yHAzU3K-8glhVjeJpaYKF1xbNTC0oX2dsj5Lmm-ihWHhnBIaiktpkArg4nzsCZXXjj83NEGsmyQ");
@@ -220,7 +221,7 @@ class AuthControllerTest {
                             preprocessRequest(prettyPrint()),
                             commonResponsePreprocessor,
                             requestFields(
-                                    fieldWithPath("email").description("사용자 이메일"),
+                                    fieldWithPath("uid").description("사용자 아이디"),
                                     fieldWithPath("password").description("사용자 비밀번호")
                             ),
                             responseFields(

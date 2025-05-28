@@ -5,7 +5,7 @@ import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.entity.RedisToken;
-import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
+import org.jnjeaaaat.snms.domain.auth.exception.DuplicateUidException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
 import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
@@ -13,7 +13,6 @@ import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
 import org.jnjeaaaat.snms.domain.member.exception.NotFoundMember;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
-import org.jnjeaaaat.snms.domain.member.type.LoginType;
 import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 import org.jnjeaaaat.snms.global.security.CustomUserDetailsService;
 import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
@@ -63,8 +62,8 @@ class AuthServiceTest {
     @DisplayName("로컬 회원가입 요청")
     class SignUpMethod {
 
-        SignUpRequest request = new SignUpRequest("test@gmail.com",
-                "qwER12!@", "qwER12!@", "test1", "/default.jpg");
+        SignUpRequest request = new SignUpRequest("testId",
+                "qwER12!@", "qwER12!@", "test1", "010-1234-1234", "/default.jpg");
 
 
         Member mockUser = createMockUser();
@@ -73,7 +72,7 @@ class AuthServiceTest {
         @DisplayName("[성공] 로컬 회원가입 성공 user id 반환")
         void success_sign_up_when_valid_request() {
             //given
-            given(memberRepository.existsByEmail(request.email())).willReturn(false);
+            given(memberRepository.existsByUid(request.uid())).willReturn(false);
             given(passwordEncoder.encode(request.password())).willReturn("newEncodedPassword");
 
             given(memberRepository.save(any(Member.class))).willReturn(mockUser);
@@ -86,24 +85,24 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("[실패] 로컬 회원가입 - 중복 이메일 DuplicateEmail")
-        void failed_sign_up_when_DuplicateEmail() {
+        @DisplayName("[실패] 로컬 회원가입 - 중복 아이디 DuplicateUid")
+        void failed_sign_up_when_DuplicateUid() {
             //given
-            given(memberRepository.existsByEmail(request.email())).willReturn(true);
+            given(memberRepository.existsByUid(request.uid())).willReturn(true);
 
             //when
             //then
             assertThatThrownBy(() -> authService.signUp(request))
-                    .isInstanceOf(DuplicateEmailException.class)
-                    .hasMessageContaining(DUPLICATE_EMAIL.getErrorMessage());
+                    .isInstanceOf(DuplicateUidException.class)
+                    .hasMessageContaining(DUPLICATE_UID.getErrorMessage());
         }
 
         @Test
         @DisplayName("[실패] 로컬 회원가입 - 비밀번호 불일치 UnmatchedPassword")
         void failed_sign_up_when_UnmatchedPassword() {
             //given
-            SignUpRequest request = new SignUpRequest("test@gmail.com",
-                    "qwER12!@", "qwER12!!", "test1", "/default.jpg");
+            SignUpRequest request = new SignUpRequest("testId",
+                    "qwER12!@", "qwER12!!", "test1", "010-1234-1234", "/default.jpg");
 
             //when
             //then
@@ -116,8 +115,8 @@ class AuthServiceTest {
         @DisplayName("[실패] 로컬 회원가입 - 기본 프로필 사진 불일치 UnmatchedDefaultFile")
         void failed_sign_up_when_UnmatchedDefaultFile() {
             //given
-            SignUpRequest request = new SignUpRequest("test@gmail.com",
-                    "qwER12!@", "qwER12!@", "test1", "/default2.jpg");
+            SignUpRequest request = new SignUpRequest("testId",
+                    "qwER12!@", "qwER12!@", "test1", "010-1234-1234", "/default2.jpg");
 
             //when
             //then
@@ -131,15 +130,15 @@ class AuthServiceTest {
     @DisplayName("로컬 로그인 요청")
     class SignInMethod {
 
-        SignInRequest request = new SignInRequest("test@gmail.com", "qwER12!@");
-        RedisToken redisToken = new RedisToken("test@gmail.com", "refreshToken", "accessToken");
+        SignInRequest request = new SignInRequest("testId", "qwER12!@");
+        RedisToken redisToken = new RedisToken("testId", "refreshToken", "accessToken");
 
         @Test
         @DisplayName("[성공] 로컬 로그인 성공 accessToken 반환")
         void success_sign_in_when_valid_request() {
             //given
-            given(customUserDetailsService.loadUserByUsername(request.email())).willReturn(userDetails);
-            given(userDetails.getUsername()).willReturn("test@gmail.com");
+            given(customUserDetailsService.loadUserByUsername(request.uid())).willReturn(userDetails);
+            given(userDetails.getUsername()).willReturn("testId");
             given(userDetails.getPassword()).willReturn("newEncodedPassword");
             given(passwordEncoder.matches(request.password(), userDetails.getPassword())).willReturn(true);
             given(jwtTokenProvider.createAccessToken(any(Authentication.class))).willReturn("accessToken");
@@ -157,7 +156,7 @@ class AuthServiceTest {
         @DisplayName("[실패] 로컬 로그인 - 회원 없음 NotFoundMember")
         void failed_sign_in_when_NotFoundMember() {
             //given
-            given(customUserDetailsService.loadUserByUsername(request.email())).willThrow(new NotFoundMember());
+            given(customUserDetailsService.loadUserByUsername(request.uid())).willThrow(new NotFoundMember());
             //when
             //then
             assertThatThrownBy(() -> authService.signIn(request))
@@ -169,7 +168,7 @@ class AuthServiceTest {
         @DisplayName("[실패] 로컬 로그인 - 비밀번호 인증 실패 WrongPassword")
         void failed_sign_in_when_WrongPassword() {
             //given
-            given(customUserDetailsService.loadUserByUsername(request.email())).willReturn(userDetails);
+            given(customUserDetailsService.loadUserByUsername(request.uid())).willReturn(userDetails);
             given(passwordEncoder.matches(request.password(), userDetails.getPassword())).willReturn(false);
             //when
             //then
@@ -181,12 +180,12 @@ class AuthServiceTest {
 
     private Member createMockUser() {
         Member member = Member.builder()
-                .email("test@gmail.com")
+                .uid("testId")
                 .password("newEncodedPassword")
                 .nickname("test1")
+                .phoneNum("010-1234-1234")
                 .profileImgUrl("/default.jpg")
                 .role(MemberRole.ROLE_USER)
-                .loginType(LoginType.LOCAL)
                 .build();
 
         ReflectionTestUtils.setField(member, "id", 1L);

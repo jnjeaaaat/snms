@@ -22,15 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return memberRepository.findByEmail(email)
+    public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
+        return memberRepository.findByUid(uid)
                 .map(this::createUser)
                 .orElseThrow(NotFoundMember::new);
     }
 
     private User createUser(Member member) {
         return new User(
-                member.getEmail(),
+                member.getUid(),
                 member.getPassword(),
                 Collections.singleton(
                         new SimpleGrantedAuthority(member.getRole().name())

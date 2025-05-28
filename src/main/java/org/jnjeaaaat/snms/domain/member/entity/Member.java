@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.jnjeaaaat.snms.domain.member.type.LoginType;
 import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 import org.jnjeaaaat.snms.global.entity.BaseEntity;
 
@@ -25,9 +24,12 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String uid;
 
     private String password;
+
+    @Column(nullable = false)
+    private String phoneNum;
 
     @Column(nullable = false)
     private String nickname;
@@ -45,19 +47,15 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
-
     private LocalDateTime deletedAt;
 
     @Builder
-    protected Member(String email, String password, String nickname, String profileImgUrl, MemberRole role, LoginType loginType) {
-        this.email = email;
+    protected Member(String uid, String password, String nickname, String phoneNum, String profileImgUrl, MemberRole role) {
+        this.uid = uid;
         this.password = password == null ? DEFAULT_PASSWORD : password;
         this.nickname = nickname;
+        this.phoneNum = phoneNum;
         this.profileImgUrl = profileImgUrl; // default from client
         this.role = role;
-        this.loginType = loginType;
     }
 }

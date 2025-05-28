@@ -7,14 +7,13 @@ import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.entity.RedisToken;
-import org.jnjeaaaat.snms.domain.auth.exception.DuplicateEmailException;
+import org.jnjeaaaat.snms.domain.auth.exception.DuplicateUidException;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
 import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
 import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
 import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
-import org.jnjeaaaat.snms.domain.member.type.LoginType;
 import org.jnjeaaaat.snms.global.security.CustomUserDetailsService;
 import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,15 +36,15 @@ public class AuthService {
     // 로컬 회원가입
     public SignUpResponse signUp(SignUpRequest request) {
 
-        validateExistEmail(request.email());
+        validateExistUid(request.uid());
         validatePassword(request.password(), request.confirmPassword());
         validateDefaultFile(request.profileImgUrl());
 
         Member savedMember = memberRepository.save(
                 SignUpRequest.toEntity(
                         request,
-                        passwordEncoder.encode(request.password()),
-                        LoginType.LOCAL)
+                        passwordEncoder.encode(request.password())
+                )
         );
 
         log.info("회원가입 성공 user_id : {}", savedMember.getId());
@@ -53,9 +52,9 @@ public class AuthService {
         return SignUpResponse.fromEntity(savedMember);
     }
 
-    private void validateExistEmail(String email) {
-        if (memberRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException();
+    private void validateExistUid(String uid) {
+        if (memberRepository.existsByUid(uid)) {
+            throw new DuplicateUidException();
         }
     }
 
@@ -76,7 +75,7 @@ public class AuthService {
     // 로그인
     public SignInResponse signIn(SignInRequest request) {
         // member 확인 후 userDetails 추출
-        UserDetails userDetails = getUserDetails(request.email());
+        UserDetails userDetails = getUserDetails(request.uid());
 
         validatePasswordMatch(request.password(), userDetails.getPassword());
 
@@ -98,8 +97,8 @@ public class AuthService {
         return new SignInResponse(accessToken);
     }
 
-    private UserDetails getUserDetails(String email) {
-        return customUserDetailsService.loadUserByUsername(email);
+    private UserDetails getUserDetails(String uid) {
+        return customUserDetailsService.loadUserByUsername(uid);
     }
 
     private Authentication createAuthentication(UserDetails userDetails) {
