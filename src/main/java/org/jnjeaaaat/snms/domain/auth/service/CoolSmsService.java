@@ -1,0 +1,55 @@
+package org.jnjeaaaat.snms.domain.auth.service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.service.DefaultMessageService;
+import org.jnjeaaaat.snms.domain.auth.entity.RedisSms;
+import org.jnjeaaaat.snms.domain.auth.exception.SmsSendException;
+import org.jnjeaaaat.snms.domain.auth.repository.RedisSmsRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+
+import static org.jnjeaaaat.snms.global.util.LogUtil.logError;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class CoolSmsService {
+
+    @Value("${coolsms.from}")
+    String fromNum;
+
+    private final DefaultMessageService messageService;
+    private final SecureRandom secureRandom;
+    private final RedisSmsRepository redisSmsRepository;
+
+    public void sendSms(HttpServletRequest request, String phoneNum) {
+        log.info("인증번호 전송 요청 : {}", phoneNum);
+
+        String authCode = generateSecureAuthCode();
+        redisSmsRepository.save(new RedisSms(phoneNum, authCode));
+
+        Message message = new Message();
+
+        message.setFrom(fromNum);
+        message.setTo(phoneNum);
+        message.setText("[SNMS] 본인확인 인증번호 [" + authCode + "] 입니다.");
+        try {
+            messageService.sendOne(new SingleMessageSendingRequest(message));
+        } catch (Exception exception) {
+            logError(request, exception);
+
+            throw new SmsSendException();
+        }
+
+    }
+
+    private String generateSecureAuthCode() {
+        return String.valueOf(100000 + secureRandom.nextInt(900000));
+    }
+}

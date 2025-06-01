@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.request.SmsVerifyRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
+import org.jnjeaaaat.snms.domain.auth.entity.RedisSms;
 import org.jnjeaaaat.snms.domain.auth.entity.RedisToken;
-import org.jnjeaaaat.snms.domain.auth.exception.DuplicateUidException;
-import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedDefaultFile;
-import org.jnjeaaaat.snms.domain.auth.exception.UnmatchedPassword;
-import org.jnjeaaaat.snms.domain.auth.exception.WrongPassword;
+import org.jnjeaaaat.snms.domain.auth.exception.*;
+import org.jnjeaaaat.snms.domain.auth.repository.RedisSmsRepository;
 import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
@@ -32,6 +32,7 @@ public class AuthService {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTokenRepository redisTokenRepository;
+    private final RedisSmsRepository redisSmsRepository;
 
     // 로컬 회원가입
     public SignUpResponse signUp(SignUpRequest request) {
@@ -112,6 +113,30 @@ public class AuthService {
     private void validatePasswordMatch(String password, String encodedPassword) {
         if (!passwordEncoder.matches(password, encodedPassword)) {
             throw new WrongPassword();
+        }
+    }
+
+    // 인증코드 확인
+    public void verifyAuthCode(SmsVerifyRequest request) {
+
+        RedisSms redisSms = redisSmsRepository.findById(request.phoneNum())
+                .orElseThrow(NotFoundPhoneNumException::new);
+
+        validateAuthCode(redisSms, request.authCode());
+
+        redisSms.verify();
+
+        redisSmsRepository.save(redisSms);
+    }
+
+    private void validateAuthCode(RedisSms redisSms, String authCode) {
+
+        if (redisSms.isVerified()) {
+            throw new AlreadyVerifiedPhoneNumException();
+        }
+
+        if (!redisSms.getAuthCode().equals(authCode)) {
+            throw new WrongAuthCodeException();
         }
     }
 }

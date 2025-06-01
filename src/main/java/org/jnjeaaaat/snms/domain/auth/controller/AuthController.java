@@ -5,9 +5,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.request.SmsSendRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.request.SmsVerifyRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.service.AuthService;
+import org.jnjeaaaat.snms.domain.auth.service.CoolSmsService;
 import org.jnjeaaaat.snms.global.util.CookieUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +31,7 @@ import static org.jnjeaaaat.snms.global.util.LogUtil.logInfo;
 public class AuthController {
 
     private final AuthService authService;
+    private final CoolSmsService coolSmsService;
 
     // 로컬 회원가입
     @PostMapping("/sign-up")
@@ -55,5 +59,26 @@ public class AuthController {
         CookieUtil.addCookie(response, COOKIE_NAME, signInResponse.accessToken(), COOKIE_MAX_AGE);
 
         return ResponseEntity.ok(signInResponse);
+    }
+
+    @PostMapping("/send-sms")
+    public ResponseEntity<Void> sendSms(HttpServletRequest request,
+                                        @RequestBody SmsSendRequest smsSendRequest) {
+        logInfo(request, "핸드폰 번호 인증 요청");
+
+        coolSmsService.sendSms(request, smsSendRequest.phoneNum());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verify-code")
+    public ResponseEntity<Void> verifyAuthCode(HttpServletRequest request,
+                                               @RequestBody SmsVerifyRequest smsVerifyRequest) {
+
+        logInfo(request, "인증번호 입력");
+
+        authService.verifyAuthCode(smsVerifyRequest);
+
+        return ResponseEntity.ok().build();
     }
 }

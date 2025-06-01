@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -33,3 +33,8 @@ cloud:
 jwt:
   secret: ${JWT_SIGN_KEY}
   issuer: snms
+
+coolsms:
+  key: ${COOLSMS_API_KEY}
+  secret: ${COOLSMS_SECRET_KEY}
+  from: ${COOLSMS_FROM_PHONENUM}
