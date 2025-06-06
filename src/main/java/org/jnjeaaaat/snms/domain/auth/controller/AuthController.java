@@ -9,14 +9,12 @@ import org.jnjeaaaat.snms.domain.auth.dto.request.SmsSendRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SmsVerifyRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
+import org.jnjeaaaat.snms.domain.auth.dto.response.VerifyCodeResponse;
 import org.jnjeaaaat.snms.domain.auth.service.AuthService;
 import org.jnjeaaaat.snms.domain.auth.service.CoolSmsService;
 import org.jnjeaaaat.snms.global.util.CookieUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -37,11 +35,13 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponse> signUp(
             HttpServletRequest request,
+            HttpServletResponse response,
             @RequestBody SignUpRequest signUpRequest) {
 
         logInfo(request, "회원가입 요청");
 
         SignUpResponse signUpResponse = authService.signUp(signUpRequest);
+        CookieUtil.addCookie(response, COOKIE_NAME, signUpResponse.accessToken(), COOKIE_MAX_AGE);
 
         URI location = UriComponentsBuilder.fromPath("/api/members/{id}").buildAndExpand(signUpResponse.id()).toUri();
 
@@ -71,14 +71,28 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * needSignUp: true 일때 /api/auth/sign-up 회원가입 진행
+     *
+     * @param request
+     * @param smsVerifyRequest
+     * @return
+     */
     @PostMapping("/verify-code")
-    public ResponseEntity<Void> verifyAuthCode(HttpServletRequest request,
-                                               @RequestBody SmsVerifyRequest smsVerifyRequest) {
+    public ResponseEntity<VerifyCodeResponse> verifyAuthCode(HttpServletRequest request,
+                                                             HttpServletResponse response,
+                                                             @RequestBody SmsVerifyRequest smsVerifyRequest) {
 
         logInfo(request, "인증번호 입력");
 
-        authService.verifyAuthCode(smsVerifyRequest);
+        VerifyCodeResponse verifyCodeResponse = authService.verifyAuthCode(smsVerifyRequest);
+        CookieUtil.addCookie(response, COOKIE_NAME, verifyCodeResponse.accessToken(), COOKIE_MAX_AGE);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(verifyCodeResponse);
+    }
+
+    @GetMapping(value = "/oauth/success", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<String> oauthSuccess() {
+        return ResponseEntity.ok("성공 success social login");
     }
 }

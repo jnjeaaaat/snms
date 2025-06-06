@@ -1,3 +1,10 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -7,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -17,6 +24,18 @@ spring:
     redis:
       port: 6379
       host: localhost
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - profile
+              - email
 
 cloud:
   aws:
@@ -38,3 +57,6 @@ coolsms:
   key: ${COOLSMS_API_KEY}
   secret: ${COOLSMS_SECRET_KEY}
   from: ${COOLSMS_FROM_PHONENUM}
+
+front:
+  url: http://localhost:3000

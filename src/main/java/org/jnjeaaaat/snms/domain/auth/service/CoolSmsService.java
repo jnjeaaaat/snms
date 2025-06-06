@@ -7,13 +7,14 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.jnjeaaaat.snms.domain.auth.entity.RedisSms;
-import org.jnjeaaaat.snms.domain.auth.exception.SmsSendException;
+import org.jnjeaaaat.snms.domain.auth.exception.AuthException;
 import org.jnjeaaaat.snms.domain.auth.repository.RedisSmsRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 
+import static org.jnjeaaaat.snms.global.exception.ErrorCode.SMS_SEND_ERROR;
 import static org.jnjeaaaat.snms.global.util.LogUtil.logError;
 
 @Slf4j
@@ -44,7 +45,7 @@ public class CoolSmsService {
         } catch (Exception exception) {
             logError(request, exception);
 
-            throw new SmsSendException();
+            throw new AuthException(SMS_SEND_ERROR);
         }
 
     }
