@@ -1,4 +1,14 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 spring:
+  messages:
+    encoding: UTF-8
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3305/snms?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -7,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -17,6 +27,23 @@ spring:
     redis:
       port: 6379
       host: localhost
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - profile
+              - email
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 40MB
 
 cloud:
   aws:
@@ -33,3 +60,11 @@ cloud:
 jwt:
   secret: ${JWT_SIGN_KEY}
   issuer: snms
+
+coolsms:
+  key: ${COOLSMS_API_KEY}
+  secret: ${COOLSMS_SECRET_KEY}
+  from: ${COOLSMS_FROM_PHONENUM}
+
+front:
+  url: http://localhost:3000

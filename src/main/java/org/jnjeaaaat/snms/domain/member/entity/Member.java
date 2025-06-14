@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.jnjeaaaat.snms.domain.member.type.LoginType;
 import org.jnjeaaaat.snms.domain.member.type.MemberRole;
 import org.jnjeaaaat.snms.global.entity.BaseEntity;
 
@@ -18,16 +17,17 @@ import java.time.LocalDateTime;
 @SQLRestriction("deleted_at is null")
 public class Member extends BaseEntity {
 
-    private static final String DEFAULT_PASSWORD = "qwER12!@";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String uid;
 
     private String password;
+
+    @Column(nullable = false)
+    private String phoneNum;
 
     @Column(nullable = false)
     private String nickname;
@@ -45,19 +45,15 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
-
     private LocalDateTime deletedAt;
 
     @Builder
-    protected Member(String email, String password, String nickname, String profileImgUrl, MemberRole role, LoginType loginType) {
-        this.email = email;
-        this.password = password == null ? DEFAULT_PASSWORD : password;
+    protected Member(String uid, String password, String nickname, String phoneNum, String profileImgUrl, MemberRole role) {
+        this.uid = uid;
+        this.password = password;
         this.nickname = nickname;
+        this.phoneNum = phoneNum;
         this.profileImgUrl = profileImgUrl; // default from client
         this.role = role;
-        this.loginType = loginType;
     }
 }
