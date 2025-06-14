@@ -17,8 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.jnjeaaaat.snms.global.constants.CookieCons.COOKIE_MAX_AGE;
-import static org.jnjeaaaat.snms.global.constants.CookieCons.COOKIE_NAME;
+import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_MAX_AGE;
+import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_NAME;
 import static org.jnjeaaaat.snms.global.exception.ErrorCode.EMPTY_TOKEN;
 
 @Component
@@ -36,7 +36,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/oauth/success", // 소셜 로그인 성공
             "/api/auth/verify-code", // 인증번호 확인
             "/api/auth/oauth/phone",
-            "/"
+            "/",
+            "/api/**" // todo: delete
     };
 
     private final JwtTokenProvider jwtTokenProvider;

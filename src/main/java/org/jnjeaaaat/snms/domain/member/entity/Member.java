@@ -17,9 +17,6 @@ import java.time.LocalDateTime;
 @SQLRestriction("deleted_at is null")
 public class Member extends BaseEntity {
 
-    private static final String DEFAULT_PASSWORD = "qwER12!@";
-    private static final String DEFAULT_NICKNAME = "change_your_nickname";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,8 +50,8 @@ public class Member extends BaseEntity {
     @Builder
     protected Member(String uid, String password, String nickname, String phoneNum, String profileImgUrl, MemberRole role) {
         this.uid = uid;
-        this.password = password == null ? DEFAULT_PASSWORD : password;
-        this.nickname = nickname == null ? DEFAULT_NICKNAME : nickname;
+        this.password = password;
+        this.nickname = nickname;
         this.phoneNum = phoneNum;
         this.profileImgUrl = profileImgUrl; // default from client
         this.role = role;

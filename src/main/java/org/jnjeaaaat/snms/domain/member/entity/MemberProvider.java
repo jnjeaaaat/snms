@@ -6,12 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jnjeaaaat.snms.domain.member.type.LoginType;
-import org.jnjeaaaat.snms.global.entity.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberProvider extends BaseEntity {
+public class MemberProvider {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +32,9 @@ public class MemberProvider extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private LocalDateTime lastLoginAt;
+
     @Builder
     protected MemberProvider(Member member, String providerName, String providerUserId, String email) {
         this.member = member;
@@ -39,6 +43,11 @@ public class MemberProvider extends BaseEntity {
         );
         this.providerUserId = providerUserId;
         this.email = email;
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void updateLastLogin() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 
 }

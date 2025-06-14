@@ -1,4 +1,4 @@
-package org.jnjeaaaat.snms.global.constants;
+package org.jnjeaaaat.snms.global.constant;
 
 public class CookieCons {
 

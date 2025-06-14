@@ -6,6 +6,9 @@ server:
       force: true
 
 spring:
+  messages:
+    encoding: UTF-8
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3305/snms?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -36,6 +39,11 @@ spring:
             scope:
               - profile
               - email
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 40MB
 
 cloud:
   aws:

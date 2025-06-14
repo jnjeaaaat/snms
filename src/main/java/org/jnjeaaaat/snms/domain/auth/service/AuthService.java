@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignInRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SignUpRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.SmsVerifyRequest;
+import org.jnjeaaaat.snms.domain.auth.dto.request.UidCheckRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.snms.domain.auth.dto.response.VerifyCodeResponse;
@@ -15,7 +16,7 @@ import org.jnjeaaaat.snms.domain.auth.repository.RedisSmsRepository;
 import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
 import org.jnjeaaaat.snms.domain.member.entity.MemberProvider;
-import org.jnjeaaaat.snms.domain.member.exception.NotFoundMember;
+import org.jnjeaaaat.snms.domain.member.exception.MemberException;
 import org.jnjeaaaat.snms.domain.member.repository.MemberProviderRepository;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.snms.global.security.CustomUserDetailsService;
@@ -45,11 +46,15 @@ public class AuthService {
 
     @Transactional
     // 로컬 회원가입
-    public SignUpResponse signUp(SignUpRequest request) {
+    public SignUpResponse signUp(SignUpRequest request, String providerName, String providerUserId, String email) {
 
-        validateExistUid(request.uid());
+        memberRepository.findByPhoneNum(request.phoneNum())
+                .ifPresent(member -> {
+                    throw new AuthException(DUPLICATE_MEMBER,
+                            "이미 가입된 유저 입니다. ID: " + member.getUid());
+                });
+
         validatePassword(request.password(), request.confirmPassword());
-        validateDefaultFile(request.profileImgUrl());
 
         Member savedMember = memberRepository.save(
                 SignUpRequest.toMemberEntity(
@@ -59,11 +64,13 @@ public class AuthService {
         );
 
         // OAuth 일때만 provider 저장
-        if (!ObjectUtils.isEmpty(request.providerName())) {
+        if (!ObjectUtils.isEmpty(providerName)) {
             memberProviderRepository.save(
                     SignUpRequest.toMemberProviderEntity(
                             savedMember,
-                            request
+                            providerName,
+                            providerUserId,
+                            email
                     )
             );
         }
@@ -76,8 +83,9 @@ public class AuthService {
         return SignUpResponse.fromEntity(savedMember, accessToken);
     }
 
-    private void validateExistUid(String uid) {
-        if (memberRepository.existsByUid(uid)) {
+    // 아이디 중복 확인
+    public void checkUid(UidCheckRequest request) {
+        if (memberRepository.existsByUid(request.uid())) {
             throw new AuthException(DUPLICATE_UID);
         }
     }
@@ -85,14 +93,6 @@ public class AuthService {
     private void validatePassword(String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             throw new AuthException(UNMATCHED_PASSWORD);
-        }
-    }
-
-    private void validateDefaultFile(String profileImgUrl) {
-        String defaultFilename = "/default.jpg";
-
-        if (!profileImgUrl.endsWith(defaultFilename)) {
-            throw new AuthException(UNMATCHED_DEFAULT_FILE);
         }
     }
 
@@ -144,7 +144,10 @@ public class AuthService {
 
     // 인증코드 확인
     @Transactional
-    public VerifyCodeResponse verifyAuthCode(SmsVerifyRequest request) {
+    public VerifyCodeResponse verifyAuthCode(SmsVerifyRequest request,
+                                             String providerName,
+                                             String providerUserId,
+                                             String email) {
 
         RedisSms redisSms = redisSmsRepository.findById(request.phoneNum())
                 .orElseThrow(() -> new AuthException(NOT_FOUND_PHONENUM));
@@ -159,25 +162,25 @@ public class AuthService {
                     request.phoneNum(),
                     null,
                     true,
-                    request.providerName(),
-                    request.providerUserId(),
-                    request.email()
+                    providerName,
+                    providerUserId,
+                    email
             );
         }
 
         // 기존 Member 가 있으면 memberId로 AccessToken 생성 후 반환
         Member member = memberRepository.findByPhoneNum(request.phoneNum())
-                .orElseThrow(NotFoundMember::new);
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
         String accessToken = signInAndGetAccessToken(member);
 
-        if (!ObjectUtils.isEmpty(request.providerName())) {
+        if (!ObjectUtils.isEmpty(providerName)) {
             memberProviderRepository.save(
                     MemberProvider.builder()
                             .member(member)
-                            .providerName(request.providerName())
-                            .providerUserId(request.providerUserId())
-                            .email(request.email())
+                            .providerName(providerName)
+                            .providerUserId(providerUserId)
+                            .email(email)
                             .build()
             );
         }
@@ -186,9 +189,9 @@ public class AuthService {
                 request.phoneNum(),
                 accessToken,
                 false,
-                request.providerName(),
-                request.providerUserId(),
-                request.email()
+                providerName,
+                providerUserId,
+                email
         );
     }
 

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.snms.domain.member.entity.Member;
 import org.jnjeaaaat.snms.domain.member.entity.MemberProvider;
-import org.jnjeaaaat.snms.domain.member.exception.NotFoundMember;
+import org.jnjeaaaat.snms.domain.member.exception.MemberException;
 import org.jnjeaaaat.snms.domain.member.repository.MemberProviderRepository;
 import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.snms.domain.member.type.LoginType;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.jnjeaaaat.snms.global.exception.ErrorCode.NOT_FOUND_MEMBER;
 import static org.jnjeaaaat.snms.global.exception.ErrorCode.VERIFY_PHONE_NUM;
 
 @Slf4j
@@ -53,7 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         Member member = memberRepository.findById(memberProvider.get().getMember().getId())
-                .orElseThrow(NotFoundMember::new);
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
         return new CustomUserDetails(member, attributes);
     }

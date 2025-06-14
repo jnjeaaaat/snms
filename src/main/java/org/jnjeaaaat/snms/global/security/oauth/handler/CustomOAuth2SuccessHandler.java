@@ -6,18 +6,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jnjeaaaat.snms.domain.auth.entity.RedisToken;
 import org.jnjeaaaat.snms.domain.auth.repository.RedisTokenRepository;
+import org.jnjeaaaat.snms.domain.member.entity.Member;
+import org.jnjeaaaat.snms.domain.member.entity.MemberProvider;
+import org.jnjeaaaat.snms.domain.member.exception.MemberException;
+import org.jnjeaaaat.snms.domain.member.repository.MemberProviderRepository;
+import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
 import org.jnjeaaaat.snms.global.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
-import static org.jnjeaaaat.snms.global.constants.CookieCons.COOKIE_MAX_AGE;
-import static org.jnjeaaaat.snms.global.constants.CookieCons.COOKIE_NAME;
+import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_MAX_AGE;
+import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_NAME;
+import static org.jnjeaaaat.snms.global.exception.ErrorCode.NOT_FOUND_MEMBER;
+import static org.jnjeaaaat.snms.global.exception.ErrorCode.NOT_FOUND_SOCIAL_LOGIN;
 import static org.jnjeaaaat.snms.global.util.LogUtil.logInfo;
 
 @Component
@@ -25,11 +33,14 @@ import static org.jnjeaaaat.snms.global.util.LogUtil.logInfo;
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     @Value("${front.url}")
-    private String frontRedirectUrl ;
+    private String frontRedirectUrl;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTokenRepository redisTokenRepository;
+    private final MemberProviderRepository memberProviderRepository;
+    private final MemberRepository memberRepository;
 
+    @Transactional
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request, HttpServletResponse response,
@@ -45,6 +56,14 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 refreshToken,
                 accessToken
         ));
+
+        Member member = memberRepository.findById(Long.valueOf(authentication.getName()))
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        MemberProvider memberProvider = memberProviderRepository.findByMember(member)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_SOCIAL_LOGIN));
+        memberProvider.updateLastLogin();
+        memberProviderRepository.save(memberProvider);
 
         CookieUtil.addCookie(response, COOKIE_NAME, accessToken, COOKIE_MAX_AGE);
 
