@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.snms.global.security.jwt.exception.TokenException;
 import org.jnjeaaaat.snms.global.util.CookieUtil;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_MAX_AGE;
 import static org.jnjeaaaat.snms.global.constant.CookieCons.COOKIE_NAME;
 import static org.jnjeaaaat.snms.global.exception.ErrorCode.EMPTY_TOKEN;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/docs/**", // spring REST docs
             "/error",
             "/favicon.ico",
+            "/api/auth/check-uid",
             "/api/auth/sign-up", // 회원가입
             "/api/auth/sign-in", // 로그인
             "/api/auth/send-sms", // 인증번호 발송
@@ -37,7 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/verify-code", // 인증번호 확인
             "/api/auth/oauth/phone",
             "/",
-            "/api/**" // todo: delete
     };
 
     private final JwtTokenProvider jwtTokenProvider;

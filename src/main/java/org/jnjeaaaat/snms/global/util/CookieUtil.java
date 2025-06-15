@@ -14,8 +14,7 @@ public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .httpOnly(true)
-                // todo: true 로 변경
-                .secure(false)
+                .secure(false) // todo: true 로 변경
                 .path("/")
                 .sameSite("None")
                 .maxAge(maxAge)
@@ -35,5 +34,17 @@ public class CookieUtil {
         }
 
         return Optional.empty();
+    }
+
+    public static void deleteCookie(HttpServletResponse response, String name) {
+        ResponseCookie cookie = ResponseCookie.from(name)
+                .httpOnly(true)
+                .secure(false) // todo: true 로 변경
+                .path("/")
+                .sameSite("None")
+                .maxAge(0)
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

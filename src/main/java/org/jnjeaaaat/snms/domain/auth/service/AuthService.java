@@ -195,6 +195,11 @@ public class AuthService {
         );
     }
 
+    @Transactional
+    public void signOut(UserDetails userDetails) {
+        redisTokenRepository.deleteById(Long.valueOf(userDetails.getUsername()));
+    }
+
     private String signInAndGetAccessToken(Member member) {
         UserDetails userDetails = getUserDetails(member.getUid());
 

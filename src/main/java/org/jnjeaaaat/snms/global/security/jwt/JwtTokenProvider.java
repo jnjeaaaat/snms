@@ -109,9 +109,9 @@ public class JwtTokenProvider {
                 "",
                 Collections.singleton(
                         new SimpleGrantedAuthority(
-                                claims.get("KEY_ROLE").toString()
+                                claims.get(KEY_ROLE).toString()
                         )
-        ));
+                ));
 
         return new UsernamePasswordAuthenticationToken(
                 user,

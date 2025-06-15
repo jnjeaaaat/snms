@@ -2,6 +2,7 @@ package org.jnjeaaaat.snms.domain.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jnjeaaaat.snms.domain.auth.dto.request.*;
 import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +37,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.responseC
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -452,6 +455,25 @@ class AuthControllerTest {
                     ));
         }
 
+    }
+
+    @Test
+    @DisplayName("[성공] 로그아웃")
+    void success_sign_out() throws Exception {
+        //given
+        //when
+        //then
+        mockMvc.perform(delete("/api/auth/sign-out")
+                        .cookie(new Cookie("access_token", "token"))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("auth/sign-out/success",
+                        preprocessRequest(prettyPrint()),
+                        commonResponsePreprocessor
+                ));
+
+        verify(authService).signOut(any(UserDetails.class));
     }
 
     @Test
