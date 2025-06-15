@@ -15,6 +15,8 @@ import org.jnjeaaaat.snms.domain.auth.service.CoolSmsService;
 import org.jnjeaaaat.snms.global.util.CookieUtil;
 import org.jnjeaaaat.snms.global.validator.annotation.ValidProviderName;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -65,6 +67,19 @@ public class AuthController {
         CookieUtil.addCookie(response, COOKIE_NAME, signInResponse.accessToken(), COOKIE_MAX_AGE);
 
         return ResponseEntity.ok(signInResponse);
+    }
+
+    // 로그아웃
+    @DeleteMapping("/sign-out")
+    public ResponseEntity<Void> singOut(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
+
+        logInfo(request, "로그아웃 요청");
+
+        authService.signOut(userDetails);
+        CookieUtil.deleteCookie(response, COOKIE_NAME);
+        return ResponseEntity.ok().build();
     }
 
     // 핸드폰 인증 번호 요청

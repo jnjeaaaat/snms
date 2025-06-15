@@ -215,6 +215,17 @@ class AuthServiceTest {
         }
     }
 
+    @Test
+    @DisplayName("[성공] 로그아웃")
+    void test() {
+        //given
+        given(userDetails.getUsername()).willReturn(String.valueOf(1L));
+        //when
+        //then
+        assertThatCode(() -> authService.signOut(userDetails))
+                .doesNotThrowAnyException();
+    }
+
     @Nested
     @DisplayName("문자인증 인증코드 확인")
     class VerifyAuthCode {
