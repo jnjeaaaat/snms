@@ -56,4 +56,20 @@ public class Member extends BaseEntity {
         this.profileImgUrl = profileImgUrl; // default from client
         this.role = role;
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
+
+    public void updateProfileImage(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
+    }
+
+    public void switchDefaultProfileImg() {
+        this.defaultProfileImg = !this.defaultProfileImg;
+    }
 }

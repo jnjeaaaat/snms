@@ -361,7 +361,7 @@ class AuthControllerTest {
         SignInRequest request = new SignInRequest("testId", "qwER12!@");
         String requestBody = objectMapper.writeValueAsString(request);
         SignInResponse signInResponse =
-                new SignInResponse("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJzbm1zIiwiaWF0IjoxNzQ4MjY5NDE4LCJleHAiOjE3NDgyNzEyMTh9.9h1Cuq3yNV2yHAzU3K-8glhVjeJpaYKF1xbNTC0oX2dsj5Lmm-ihWHhnBIaiktpkArg4nzsCZXXjj83NEGsmyQ");
+                new SignInResponse(1L, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpc3MiOiJzbm1zIiwiaWF0IjoxNzQ4MjY5NDE4LCJleHAiOjE3NDgyNzEyMTh9.9h1Cuq3yNV2yHAzU3K-8glhVjeJpaYKF1xbNTC0oX2dsj5Lmm-ihWHhnBIaiktpkArg4nzsCZXXjj83NEGsmyQ");
 
         SignInTest() throws JsonProcessingException {
         }
@@ -408,6 +408,7 @@ class AuthControllerTest {
                                             )
                             ),
                             responseFields(
+                                    fieldWithPath("id").description("사용자 고유 ID"),
                                     fieldWithPath("accessToken").description("JWT 엑세스 토큰")
                             )
                     ));
