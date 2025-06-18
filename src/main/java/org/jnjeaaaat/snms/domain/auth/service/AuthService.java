@@ -121,7 +121,10 @@ public class AuthService {
         );
         redisTokenRepository.save(redisToken);
 
-        return new SignInResponse(accessToken);
+        return new SignInResponse(
+                Long.valueOf(userDetails.getUsername()),
+                accessToken
+        );
     }
 
     private UserDetails getUserDetails(String uid) {

@@ -36,6 +36,14 @@ public enum ErrorCode {
     INVALID_TOKEN(BAD_REQUEST, "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(UNAUTHORIZED, "만료된 토큰입니다."),
 
+    ALREADY_DELETED_MEMBER(BAD_REQUEST, "삭제된 계정입니다."),
+    AUTHENTICATION_MEMBER_MISMATCH(UNAUTHORIZED, "인증된 사용자 정보가 일치하지 않습니다."),
+
+    EMPTY_FILE(BAD_REQUEST, "비어있는 파일 입니다."),
+
+    INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 오류 발생"),
+
+
     ;
 
     private final HttpStatus HttpStatus;

@@ -20,15 +20,19 @@ public @interface ValidFile {
 
     Class<? extends Payload>[] payload() default {};
 
-    long maxSize() default 5 * 1024 * 1024; // 5MB
-
+    /**
+     * 허용된 이미지 타입들
+     */
     String[] allowedTypes() default {
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "image/gif",
-            "image/webp"
+            "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
     };
 
-    boolean allowEmpty() default false;
+    long maxSizePerFile() default 5;
+
+    long maxTotalSize() default 40;
+
+    /**
+     * null 값 허용 여부
+     */
+    boolean allowNull() default true;
 }
