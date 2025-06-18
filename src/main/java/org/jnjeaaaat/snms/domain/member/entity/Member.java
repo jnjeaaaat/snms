@@ -72,4 +72,8 @@ public class Member extends BaseEntity {
     public void switchDefaultProfileImg() {
         this.defaultProfileImg = !this.defaultProfileImg;
     }
+
+    public void deleteMember() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

@@ -40,6 +40,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -94,8 +95,12 @@ class AuthControllerTest {
         );
 
         errorResponseSnippet = responseFields(
-                fieldWithPath("errorCode").description("에러 상태"),
-                fieldWithPath("message").description("에러 메세지")
+                fieldWithPath("errorCode")
+                        .description("에러 상태")
+                        .type(STRING),
+                fieldWithPath("message")
+                        .description("에러 메세지")
+                        .type(STRING)
         );
     }
 
@@ -129,6 +134,7 @@ class AuthControllerTest {
                             requestFields(
                                     fieldWithPath("uid")
                                             .description("가입 아이디")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("4 - 10자, 알파벳 대소문자, 숫자 입력 가능"),
                                                     key("minLength").value("4"),
@@ -215,6 +221,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 제공자 이름")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("format").value("google, kakao, naver 지원"),
                                                     key("validation").value("@ValidProviderName"),
                                                     key("customValidation").value("@ValidProviderName: null 이거나 google, kakao, naver 일때 통과"),
@@ -224,6 +231,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 식별자")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("validation").value("@Nullable @Email"),
                                                     key("conditionalRequired").value("소셜 로그인 진행 시 핸드폰 번호에 따른 계정이 없을 때 필수")
                                             ),
@@ -231,6 +239,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 이메일")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("format").value("email 형식"),
                                                     key("validation").value("@Nullable @Email"),
                                                     key("conditionalRequired").value("소셜 로그인 진행 시 핸드폰 번호에 따른 계정이 없을 때 필수")
@@ -239,6 +248,7 @@ class AuthControllerTest {
                             requestFields(
                                     fieldWithPath("uid")
                                             .description("가입 아이디")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("4-10자, 알파벳 대소문자, 숫자 입력 가능"),
                                                     key("minLength").value("4"),
@@ -250,6 +260,7 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("password")
                                             .description("비밀번호")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("8-20자, 영문 대소문자, 숫자, 특수문자 조합"),
                                                     key("minLength").value("8"),
@@ -261,6 +272,7 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("confirmPassword")
                                             .description("비밀번호 재확인")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("8-20자, 영문 대소문자, 숫자, 특수문자 조합"),
                                                     key("minLength").value("8"),
@@ -272,18 +284,19 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("nickname")
                                             .description("닉네임")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("1-10자, 영문 대소문자, 숫자, 한글 조합"),
                                                     key("minLength").value("1"),
                                                     key("maxLength").value("10"),
-                                                    key("format").value("영문 대소문자, 숫자, 한글 포함"),
+                                                    key("format").value("영문 대소문자, 숫자, 한글 조합"),
                                                     key("pattern").value("^[a-zA-Z0-9가-힣]{1,10}$"),
                                                     key("validation").value("@NotBlank @ValidNickname"),
                                                     key("customValidation").value("@ValidNickname: 닉네임 패턴, 길이(1-10) 체크")
-
                                             ),
                                     fieldWithPath("phoneNum")
                                             .description("핸드폰 번호")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자. '-'이 있을경우 제거하고 DB 저장"),
                                                     key("format").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자"),
@@ -293,6 +306,7 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("profileImgUrl")
                                             .description("기본 프로필 이미지")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("초기 회원가입 시 지정안하고 default 이미지 사용"),
                                                     key("validation").value("@NotBlank @ValidDefaultImg"),
@@ -301,8 +315,12 @@ class AuthControllerTest {
                                             )
                             ),
                             responseFields(
-                                    fieldWithPath("id").description("사용자 고유 ID"),
-                                    fieldWithPath("accessToken").description("JWT 엑세스 토큰")
+                                    fieldWithPath("id")
+                                            .description("사용자 고유 ID")
+                                            .type(NUMBER),
+                                    fieldWithPath("accessToken")
+                                            .description("JWT 엑세스 토큰")
+                                            .type(STRING)
                             )
                     ));
 
@@ -386,6 +404,7 @@ class AuthControllerTest {
                             requestFields(
                                     fieldWithPath("uid")
                                             .description("가입 아이디")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("4-10자, 알파벳 대소문자, 숫자 입력 가능"),
                                                     key("minLength").value("4"),
@@ -397,6 +416,7 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("password")
                                             .description("비밀번호")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("8-20자, 영문 대소문자, 숫자, 특수문자 조합"),
                                                     key("minLength").value("8"),
@@ -408,8 +428,12 @@ class AuthControllerTest {
                                             )
                             ),
                             responseFields(
-                                    fieldWithPath("id").description("사용자 고유 ID"),
-                                    fieldWithPath("accessToken").description("JWT 엑세스 토큰")
+                                    fieldWithPath("id")
+                                            .description("사용자 고유 ID")
+                                            .type(NUMBER),
+                                    fieldWithPath("accessToken")
+                                            .description("JWT 엑세스 토큰")
+                                            .type(STRING)
                             )
                     ));
         }
@@ -500,6 +524,7 @@ class AuthControllerTest {
                         requestFields(
                                 fieldWithPath("phoneNum")
                                         .description("핸드폰 번호")
+                                        .type(STRING)
                                         .attributes(
                                                 key("constraints").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자. '-'이 있을경우 제거하고 DB 저장"),
                                                 key("format").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자"),
@@ -553,6 +578,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 제공자 이름")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("format").value("google, kakao, naver 지원"),
                                                     key("validation").value("@ValidProviderName"),
                                                     key("customValidation").value("@ValidProviderName: null 이거나 google, kakao, naver 일때 통과"),
@@ -562,6 +588,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 식별자")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("validation").value("@Nullable @Email"),
                                                     key("conditionalRequired").value("소셜 로그인 진행 시 핸드폰 번호에 따른 계정이 없을 때 필수")
                                             ),
@@ -569,6 +596,7 @@ class AuthControllerTest {
                                             .description("소셜 로그인 이메일")
                                             .optional()
                                             .attributes(
+                                                    key("type").value("STRING"),
                                                     key("format").value("email 형식"),
                                                     key("validation").value("@Nullable @Email"),
                                                     key("conditionalRequired").value("소셜 로그인 진행 시 핸드폰 번호에 따른 계정이 없을 때 필수")
@@ -577,6 +605,7 @@ class AuthControllerTest {
                             requestFields(
                                     fieldWithPath("phoneNum")
                                             .description("핸드폰 번호")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자. '-'이 있을경우 제거하고 DB 저장"),
                                                     key("format").value("010,011,016,017,018,019으로 시작하는 7, 8 자리 숫자"),
@@ -586,6 +615,7 @@ class AuthControllerTest {
                                             ),
                                     fieldWithPath("authCode")
                                             .description("문자 인증 코드")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("0-9까지 숫자로 이루어진 6자리 인증코드"),
                                                     key("format").value("0-9까지 숫자 6자리"),
@@ -594,29 +624,33 @@ class AuthControllerTest {
                                             )
                             ),
                             responseFields(
-                                    fieldWithPath("phoneNum").description("사용자 핸드폰 번호"),
+                                    fieldWithPath("phoneNum")
+                                            .description("사용자 핸드폰 번호")
+                                            .type(STRING),
                                     fieldWithPath("accessToken")
                                             .description("JWT 엑세스 토큰")
+                                            .type(STRING)
                                             .attributes(
-                                                    key("constraints").value("기본적으로 null, 이미 계정이 있다면 엑세스 토큰 반환 후 로그인 처리")
+                                                    key("constraints").value("일반적으로 null, 이미 계정이 있다면 엑세스 토큰 반환 후 로그인 처리")
                                             ),
                                     fieldWithPath("needSignUp")
                                             .description("로그인 필요 유무")
-                                            .attributes(
-                                                    key("constraints").value("소셜 로그인 진행 시 needSignUp 유무 필요")
-                                            ),
+                                            .type(BOOLEAN),
                                     fieldWithPath("providerName")
                                             .description("소셜 로그인 제공자")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("소셜 로그인 진행이 아니라면 null")
                                             ),
                                     fieldWithPath("providerUserId")
                                             .description("소셜 로그인 식별자")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("소셜 로그인 진행이 아니라면 null")
                                             ),
                                     fieldWithPath("email")
                                             .description("소셜 로그인 이메일")
+                                            .type(STRING)
                                             .attributes(
                                                     key("constraints").value("소셜 로그인 진행이 아니라면 null")
                                             )

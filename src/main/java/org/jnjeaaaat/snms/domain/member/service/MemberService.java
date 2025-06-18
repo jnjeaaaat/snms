@@ -76,7 +76,7 @@ public class MemberService {
         }
 
         if (!Objects.equals(member.getId(), Long.valueOf(userDetails.getUsername()))) {
-            throw new MemberException(AUTHENTICATION_USER_MISMATCH);
+            throw new MemberException(AUTHENTICATION_MEMBER_MISMATCH);
         }
     }
 

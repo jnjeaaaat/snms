@@ -29,8 +29,8 @@ public class MemberController {
             HttpServletRequest request,
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long memberId,
-            @RequestPart("request") @Valid UpdateMemberRequest updateMemberRequest,
-            @RequestPart("file") @ValidFile MultipartFile profileImg) {
+            @RequestPart(value = "request") @Valid UpdateMemberRequest updateMemberRequest,
+            @RequestPart(value = "file", required = false) @ValidFile MultipartFile profileImg) {
 
         logInfo(request, "사용자 정보 업데이트");
 
