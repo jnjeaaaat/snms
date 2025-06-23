@@ -1,1 +1,5 @@
 rootProject.name = 'snms'
+
+include 'common'
+include 'user-service'
+include 'post-service'

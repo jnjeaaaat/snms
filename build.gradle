@@ -1,97 +1,45 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.5'
+    id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.7'
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
-group = 'org.jnjeaaaat'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+    group = 'org.jnjeaaaat'
+    version = '0.0.1-SNAPSHOT'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    repositories {
+        mavenCentral()
     }
-}
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
+        }
     }
-    asciidoctorExt
+
 }
 
-repositories {
-    mavenCentral()
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
+        }
+    }
+
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // oauth2
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // docs
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
-    // coolSms
-    implementation 'net.nurigo:sdk:4.2.7'
-
-    // jwt
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-
-    // s3
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.261'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
-
-tasks.named('test') {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
-}
-
-asciidoctor {
-    configurations 'asciidoctorExt'
-    baseDirFollowsSourceFile()
-    inputs.dir snippetsDir
-    dependsOn test
-}
-
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
-}
-
-tasks.register('copyDocument', Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-build {
-    dependsOn copyDocument
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // Gateway는 WebFlux 기반
 }
