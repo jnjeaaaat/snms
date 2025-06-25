@@ -1,18 +1,33 @@
 version: "3.8"
 
 services:
-  db:
+  userdb:
     image: mysql:latest
-    container_name: snms-mysql
+    container_name: snms-user-mysql
     ports:
-      - "3305:3306"
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_DATABASE: ${USER_MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-user-data:/var/lib/mysql
+    networks:
+      - snms-server
+
+  postdb:
+    image: mysql:latest
+    container_name: snms-post-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${POST_MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-post-data:/var/lib/mysql
     networks:
       - snms-server
 
@@ -28,7 +43,8 @@ services:
       - snms-server
 
 volumes:
-  mysql-data:
+  mysql-user-data:
+  mysql-post-data:
   redis-data:
 
 networks:

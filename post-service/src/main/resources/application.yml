@@ -1,0 +1,41 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/postdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${LOCAL_MYSQL_USERNAME}
+    password: ${LOCAL_MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+cloud:
+  aws:
+    s3:
+      bucket: mysnmsbucket
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${POST_AWS_S3_ACCESS_KEY}
+        secret-key: ${POST_AWS_S3_SECRET_KEY}
+      stack:
+        auto: false
+
+jwt:
+  secret: ${POST_JWT_SIGN_KEY}
+  issuer: snms
+
+front:
+  url: http://localhost:3000

@@ -1,70 +1,46 @@
 server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
+  port: 8080
 
 spring:
-  messages:
-    encoding: UTF-8
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ${FRONT_URL}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "Location"
+            allowCredentials: true
+      routes:
+        - id: user-service-auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3305/snms?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${LOCAL_MYSQL_USERNAME}
-    password: ${LOCAL_MYSQL_PASSWORD}
+        - id: user-service-members
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/members/**
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
+        - id: post-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/posts/**
+          filters:
+            - RewritePath=/api/posts/(?<segment>.*), /$\{segment}
 
-  data:
-    redis:
-      port: 6379
-      host: localhost
+        - id: oauth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/oauth2/**
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
-            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}
-            redirect-uri: ${GOOGLE_REDIRECT_URI}
-            scope:
-              - profile
-              - email
-
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 40MB
-
-cloud:
-  aws:
-    s3:
-      bucket: mysnmsbucket
-      region:
-        static: ap-northeast-2
-      credentials:
-        access-key: ${AWS_S3_ACCESS_KEY}
-        secret-key: ${AWS_S3_SECRET_KEY}
-      stack:
-        auto: false
-
-jwt:
-  secret: ${JWT_SIGN_KEY}
-  issuer: snms
-
-coolsms:
-  key: ${COOLSMS_API_KEY}
-  secret: ${COOLSMS_SECRET_KEY}
-  from: ${COOLSMS_FROM_PHONENUM}
-
-front:
-  url: http://localhost:3000
+        - id: oauth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/login/oauth2/**
