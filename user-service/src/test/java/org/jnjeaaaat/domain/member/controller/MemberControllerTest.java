@@ -1,4 +1,4 @@
-package org.jnjeaaaat.snms.domain.member.controller;
+package org.jnjeaaaat.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.servlet.http.Cookie;
-import org.jnjeaaaat.snms.domain.member.dto.request.UpdateMemberRequest;
-import org.jnjeaaaat.snms.domain.member.dto.response.UpdateMemberResponse;
-import org.jnjeaaaat.snms.domain.member.exception.MemberException;
-import org.jnjeaaaat.snms.domain.member.service.MemberService;
-import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
+import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
+import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
+import org.jnjeaaaat.domain.member.exception.MemberException;
+import org.jnjeaaaat.domain.member.service.MemberService;
+import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,8 +33,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.jnjeaaaat.snms.global.exception.ErrorCode.*;
-import static org.jnjeaaaat.snms.global.util.UserTestFixture.createTestUser;
+import static org.jnjeaaaat.global.exception.ErrorCode.*;
+import static org.jnjeaaaat.global.util.UserTestFixture.createTestUser;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(
         controllers = MemberController.class
 )
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(outputDir = "../build/generated-snippets")
 @ActiveProfiles("test")
 class MemberControllerTest {
 

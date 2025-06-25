@@ -1,13 +1,11 @@
-package org.jnjeaaaat.snms;
+package org.jnjeaaaat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SnmsApplicationTests {
-
+class UserServiceApplicationTest {
     @Test
     void contextLoads() {
     }
-
 }

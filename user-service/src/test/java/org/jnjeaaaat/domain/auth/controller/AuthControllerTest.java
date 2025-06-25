@@ -1,17 +1,17 @@
-package org.jnjeaaaat.snms.domain.auth.controller;
+package org.jnjeaaaat.domain.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.jnjeaaaat.snms.domain.auth.dto.request.*;
-import org.jnjeaaaat.snms.domain.auth.dto.response.SignInResponse;
-import org.jnjeaaaat.snms.domain.auth.dto.response.SignUpResponse;
-import org.jnjeaaaat.snms.domain.auth.dto.response.VerifyCodeResponse;
-import org.jnjeaaaat.snms.domain.auth.exception.AuthException;
-import org.jnjeaaaat.snms.domain.auth.service.AuthService;
-import org.jnjeaaaat.snms.domain.auth.service.CoolSmsService;
-import org.jnjeaaaat.snms.global.security.jwt.JwtTokenProvider;
+import org.jnjeaaaat.domain.auth.dto.request.*;
+import org.jnjeaaaat.domain.auth.dto.response.SignInResponse;
+import org.jnjeaaaat.domain.auth.dto.response.SignUpResponse;
+import org.jnjeaaaat.domain.auth.dto.response.VerifyCodeResponse;
+import org.jnjeaaaat.domain.auth.exception.AuthException;
+import org.jnjeaaaat.domain.auth.service.AuthService;
+import org.jnjeaaaat.domain.auth.service.CoolSmsService;
+import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.jnjeaaaat.snms.global.exception.ErrorCode.*;
+import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(
         controllers = AuthController.class
 )
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs(outputDir = "../build/generated-snippets")
 @ActiveProfiles("test")
 class AuthControllerTest {
 

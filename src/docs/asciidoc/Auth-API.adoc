@@ -21,9 +21,6 @@ operation::auth/sign-up/duplicated_uid/[snippets='http-response']
 ===== `Unmatched Password`
 operation::auth/sign-up/unmatched_password/[snippets='http-response']
 
-===== `Unmatched Default File`
-operation::auth/sign-up/unmatched_default_file/[snippets='http-response']
-
 operation::auth/sign-up/duplicated_uid/[snippets='response-fields']
 
 [[로컬로그인]]

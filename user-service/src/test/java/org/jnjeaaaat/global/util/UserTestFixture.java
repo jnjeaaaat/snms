@@ -1,4 +1,4 @@
-package org.jnjeaaaat.snms.global.util;
+package org.jnjeaaaat.global.util;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

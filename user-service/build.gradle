@@ -1,13 +1,9 @@
-plugins {
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
-}
-
 configurations {
     asciidoctorExt
 }
 
 ext {
-    snippetsDir = file('build/generated-snippets')
+    snippetsDir = file("$rootDir/build/generated-snippets")
 }
 
 dependencies {
@@ -39,31 +35,11 @@ dependencies {
 
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'io.projectreactor:reactor-test'
 }
 
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
-}
-
-asciidoctor {
-    configurations 'asciidoctorExt'
-    baseDirFollowsSourceFile()
-    inputs.dir snippetsDir
-    dependsOn test
-}
-
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
-}
-
-tasks.register('copyDocument', Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-build {
-    dependsOn copyDocument
 }

@@ -1,14 +1,14 @@
-package org.jnjeaaaat.snms.domain.member.service;
+package org.jnjeaaaat.domain.member.service;
 
-import org.jnjeaaaat.snms.domain.member.dto.request.UpdateMemberRequest;
-import org.jnjeaaaat.snms.domain.member.dto.response.UpdateMemberResponse;
-import org.jnjeaaaat.snms.domain.member.entity.Member;
-import org.jnjeaaaat.snms.domain.member.exception.MemberException;
-import org.jnjeaaaat.snms.domain.member.repository.MemberRepository;
-import org.jnjeaaaat.snms.domain.member.type.MemberRole;
-import org.jnjeaaaat.snms.global.security.CustomUserDetailsService;
-import org.jnjeaaaat.snms.global.storage.FilePathType;
-import org.jnjeaaaat.snms.global.storage.StorageService;
+import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
+import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
+import org.jnjeaaaat.domain.member.entity.Member;
+import org.jnjeaaaat.domain.member.exception.MemberException;
+import org.jnjeaaaat.domain.member.repository.MemberRepository;
+import org.jnjeaaaat.domain.member.type.MemberRole;
+import org.jnjeaaaat.global.security.CustomUserDetailsService;
+import org.jnjeaaaat.global.storage.FilePathType;
+import org.jnjeaaaat.global.storage.StorageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.jnjeaaaat.snms.global.exception.ErrorCode.*;
+import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
