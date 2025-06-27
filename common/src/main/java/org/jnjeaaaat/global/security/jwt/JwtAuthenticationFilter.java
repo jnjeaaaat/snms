@@ -31,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/docs/**", // spring REST docs
             "/error",
             "/favicon.ico",
+            "/client/**",
             "/api/auth/check-uid",
             "/api/auth/sign-up", // 회원가입
             "/api/auth/sign-in", // 로그인

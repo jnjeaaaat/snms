@@ -10,6 +10,8 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    EXTERNAL_API_ERROR(INTERNAL_SERVER_ERROR, "외부 API 호출에 실패하였습니다."),
+
     ACCESS_DENIED(FORBIDDEN, "접근이 거부되었습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증이 실패하였습니다."),
 
