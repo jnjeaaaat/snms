@@ -21,7 +21,7 @@ dependencies {
     // SMS 서비스 (사용자 인증용)
     implementation 'net.nurigo:sdk:4.2.7'
 
-    // 데이터베이스
+    // db
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
