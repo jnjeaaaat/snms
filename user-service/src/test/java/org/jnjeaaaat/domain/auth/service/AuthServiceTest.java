@@ -7,7 +7,7 @@ import org.jnjeaaaat.domain.auth.dto.request.UidCheckRequest;
 import org.jnjeaaaat.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.domain.auth.entity.RedisSms;
-import org.jnjeaaaat.domain.auth.exception.AuthException;
+import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.domain.auth.repository.RedisSmsRepository;
 import org.jnjeaaaat.domain.member.entity.Member;
 import org.jnjeaaaat.domain.member.entity.MemberProvider;

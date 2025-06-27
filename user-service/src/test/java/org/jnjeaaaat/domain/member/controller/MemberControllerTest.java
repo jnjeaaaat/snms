@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.servlet.http.Cookie;
 import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
 import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
-import org.jnjeaaaat.domain.member.exception.MemberException;
+import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.domain.member.service.MemberService;
 import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;

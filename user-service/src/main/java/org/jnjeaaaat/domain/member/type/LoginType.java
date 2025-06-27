@@ -1,7 +1,7 @@
 package org.jnjeaaaat.domain.member.type;
 
 import lombok.RequiredArgsConstructor;
-import org.jnjeaaaat.domain.auth.exception.AuthException;
+import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.global.security.oauth.dto.OAuthUserInfo;
 
 import java.util.Map;

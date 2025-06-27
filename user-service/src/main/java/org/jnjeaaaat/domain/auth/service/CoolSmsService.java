@@ -8,7 +8,7 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.jnjeaaaat.domain.auth.dto.request.SmsSendRequest;
 import org.jnjeaaaat.domain.auth.entity.RedisSms;
-import org.jnjeaaaat.domain.auth.exception.AuthException;
+import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.domain.auth.repository.RedisSmsRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

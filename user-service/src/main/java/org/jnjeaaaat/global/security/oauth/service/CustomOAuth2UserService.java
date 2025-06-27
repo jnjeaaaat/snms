@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.member.entity.Member;
 import org.jnjeaaaat.domain.member.entity.MemberProvider;
-import org.jnjeaaaat.domain.member.exception.MemberException;
+import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.domain.member.repository.MemberProviderRepository;
 import org.jnjeaaaat.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.domain.member.type.LoginType;

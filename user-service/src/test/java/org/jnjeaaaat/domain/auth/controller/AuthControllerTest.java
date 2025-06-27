@@ -8,7 +8,7 @@ import org.jnjeaaaat.domain.auth.dto.request.*;
 import org.jnjeaaaat.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.domain.auth.dto.response.VerifyCodeResponse;
-import org.jnjeaaaat.domain.auth.exception.AuthException;
+import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.domain.auth.service.AuthService;
 import org.jnjeaaaat.domain.auth.service.CoolSmsService;
 import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
