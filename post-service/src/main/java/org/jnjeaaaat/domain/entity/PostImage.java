@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostImages {
+public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +23,20 @@ public class PostImages {
     private Boolean isThumbnail = false;
 
     @Builder
-    protected PostImages(String imageUrl, Post post) {
+    protected PostImage(String imageUrl, Post post) {
         this.imageUrl = imageUrl;
         this.post = post;
     }
 
-    public static PostImages of(String imageUrl, Post post) {
+    public static PostImage of(String imageUrl, Post post) {
         return builder()
                 .imageUrl(imageUrl)
                 .post(post)
                 .build();
+    }
+
+    public boolean isThumbnail() {
+        return Boolean.TRUE.equals(this.isThumbnail);
     }
 
 }

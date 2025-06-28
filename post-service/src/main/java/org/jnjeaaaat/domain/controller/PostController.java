@@ -3,12 +3,18 @@ package org.jnjeaaaat.domain.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.dto.request.CreatePostRequest;
 import org.jnjeaaaat.domain.dto.response.CreatePostResponse;
 import org.jnjeaaaat.domain.dto.response.PostInfoResponse;
+import org.jnjeaaaat.domain.service.PostClientService;
 import org.jnjeaaaat.domain.service.PostService;
+import org.jnjeaaaat.dto.CustomPageRequest;
 import org.jnjeaaaat.dto.TestDto;
+import org.jnjeaaaat.dto.post.PostsResponse;
 import org.jnjeaaaat.global.validator.annotation.ValidFile;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +33,7 @@ import static org.jnjeaaaat.global.util.LogUtil.logInfo;
 public class PostController {
 
     private final PostService postService;
+    private final PostClientService postClientService; // todo: 테스트용 추후 삭제
 
     @GetMapping("")
     public ResponseEntity<TestDto> postTest(HttpServletRequest request) {
@@ -65,6 +72,21 @@ public class PostController {
                 postService.getPostInfo(
                         userDetails,
                         postId
+                )
+        );
+    }
+
+    // todo: postman 테스트용 후에 삭제
+    @GetMapping("/members/{targetMemberId}")
+    public Slice<PostsResponse> getPostsByMemberId(@PathVariable Long targetMemberId,
+                                                   @AuthenticationPrincipal UserDetails userDetails,
+                                                   @RequestBody CustomPageRequest pageRequest) {
+        return postClientService.getPostsByMemberId(
+                Long.parseLong(userDetails.getUsername()),
+                targetMemberId,
+                PageRequest.of(
+                        pageRequest.page(),
+                        CustomPageRequest.PAGE_SIZE
                 )
         );
     }

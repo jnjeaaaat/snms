@@ -25,6 +25,9 @@ public class PostSecurityConfig extends BaseSecurityConfig {
 
                         .requestMatchers("/", "/docs/**", "/error", "/favicon.ico").permitAll()
                         .requestMatchers("/api/**").permitAll()
+
+                        .requestMatchers("/client/**").permitAll()
+
                         .anyRequest().authenticated()
                 );
 

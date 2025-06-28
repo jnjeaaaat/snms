@@ -79,10 +79,15 @@ public class PostService {
      */
     public PostInfoResponse getPostInfo(UserDetails userDetails, Long postId) {
 
-        validateMember(Long.parseLong(userDetails.getUsername()));
+        Long memberId = Long.parseLong(userDetails.getUsername());
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(NOT_FOUND_POST));
+
+        // 작성자가 아닌데 숨겨진 게시글 일때
+        if (!post.getMemberId().equals(memberId) && !post.getIsPublic()) {
+            throw new PostException(POST_NOT_PUBLIC);
+        }
 
         return PostInfoResponse.fromEntity(
                 post,

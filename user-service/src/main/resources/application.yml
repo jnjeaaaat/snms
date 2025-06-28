@@ -54,5 +54,10 @@ coolsms:
   secret: ${COOLSMS_SECRET_KEY}
   from: ${COOLSMS_FROM_PHONENUM}
 
+feign:
+  client:
+    post-service:
+      url: http://localhost:8082
+
 front:
   url: http://localhost:3000

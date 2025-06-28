@@ -25,7 +25,7 @@ public class Post extends BaseEntity {
     private Long memberId;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImages> postImages;
+    private List<PostImage> postImages;
 
     @Column(nullable = false)
     private String content;
@@ -43,7 +43,7 @@ public class Post extends BaseEntity {
 
     public void setPostImageUrls(List<String> postImageUrls) {
         this.postImages = postImageUrls.stream()
-                .map(imageUrl -> PostImages.of(imageUrl, this))
+                .map(imageUrl -> PostImage.of(imageUrl, this))
                 .toList();
 
         this.postImages.get(0).setIsThumbnail(true);
