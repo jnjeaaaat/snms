@@ -1,4 +1,4 @@
-package org.jnjeaaaat.domain.dto;
+package org.jnjeaaaat.domain.dto.request;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Size;

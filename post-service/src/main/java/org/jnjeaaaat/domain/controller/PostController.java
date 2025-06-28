@@ -3,8 +3,9 @@ package org.jnjeaaaat.domain.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.jnjeaaaat.domain.dto.CreatePostRequest;
-import org.jnjeaaaat.domain.dto.CreatePostResponse;
+import org.jnjeaaaat.domain.dto.request.CreatePostRequest;
+import org.jnjeaaaat.domain.dto.response.CreatePostResponse;
+import org.jnjeaaaat.domain.dto.response.PostInfoResponse;
 import org.jnjeaaaat.domain.service.PostService;
 import org.jnjeaaaat.dto.TestDto;
 import org.jnjeaaaat.global.validator.annotation.ValidFile;
@@ -48,6 +49,22 @@ public class PostController {
                 postService.createPost(userDetails,
                         createPostRequest,
                         files
+                )
+        );
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostInfoResponse> getPostInfo(
+            HttpServletRequest request,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long postId) {
+
+        logInfo(request, "포스팅 정보 요청");
+
+        return ResponseEntity.ok(
+                postService.getPostInfo(
+                        userDetails,
+                        postId
                 )
         );
     }

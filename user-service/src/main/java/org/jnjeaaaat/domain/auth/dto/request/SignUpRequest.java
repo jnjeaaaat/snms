@@ -32,7 +32,7 @@ public record SignUpRequest(
 
         @NotBlank
         @ValidDefaultImg
-        String profileImgUrl
+        String profileImageUrl
 ) {
 
 
@@ -42,7 +42,7 @@ public record SignUpRequest(
                 .password(password)
                 .nickname(request.nickname())
                 .phoneNum(request.phoneNum())
-                .profileImgUrl(request.profileImgUrl())
+                .profileImageUrl(request.profileImageUrl())
                 .role(MemberRole.ROLE_USER)
                 .build();
     }

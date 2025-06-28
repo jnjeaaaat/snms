@@ -19,7 +19,7 @@ public record UpdateMemberResponse(
         return builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .profileImgUrl(member.getProfileImgUrl())
+                .profileImgUrl(member.getProfileImageUrl())
                 .defaultProfileImg(member.getDefaultProfileImg())
                 .introduce(member.getIntroduce())
                 .updatedAt(LocalDateTime.now())

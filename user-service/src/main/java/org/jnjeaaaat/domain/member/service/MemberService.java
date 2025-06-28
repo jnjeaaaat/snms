@@ -81,7 +81,7 @@ public class MemberService {
     }
 
     private void updateMemberProfileImage(Member member, MultipartFile file) {
-        String originProfileUrl = member.getProfileImgUrl();
+        String originProfileUrl = member.getProfileImageUrl();
         String imageUrl = storageService.uploadImage(MEMBER, member.getId(), file);
         member.updateProfileImage(imageUrl);
 
