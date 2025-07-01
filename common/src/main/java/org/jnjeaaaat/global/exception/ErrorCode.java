@@ -10,6 +10,8 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    EXTERNAL_API_ERROR(INTERNAL_SERVER_ERROR, "외부 API 호출에 실패하였습니다."),
+
     ACCESS_DENIED(FORBIDDEN, "접근이 거부되었습니다."),
     SECURITY_UNAUTHORIZED(UNAUTHORIZED, "인증이 실패하였습니다."),
 
@@ -42,6 +44,9 @@ public enum ErrorCode {
     EMPTY_FILE(BAD_REQUEST, "비어있는 파일 입니다."),
 
     INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 오류 발생"),
+
+    NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 포스트입니다."),
+    POST_NOT_PUBLIC(FORBIDDEN, "공개되지 않은 포스트입니다."),
 
 
     ;

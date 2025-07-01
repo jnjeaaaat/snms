@@ -83,7 +83,7 @@ public class StorageService {
         }
     }
 
-    public List<String> uploadMultipleFiles(String folderPath, List<MultipartFile> files) {
+    private List<String> uploadMultipleFiles(String folderPath, List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
             throw new StorageException(EMPTY_FILE);
         }

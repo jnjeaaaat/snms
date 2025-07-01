@@ -33,7 +33,7 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private String profileImgUrl;
+    private String profileImageUrl;
 
     @Column
     private Boolean defaultProfileImg = true;
@@ -48,12 +48,12 @@ public class Member extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    protected Member(String uid, String password, String nickname, String phoneNum, String profileImgUrl, MemberRole role) {
+    protected Member(String uid, String password, String nickname, String phoneNum, String profileImageUrl, MemberRole role) {
         this.uid = uid;
         this.password = password;
         this.nickname = nickname;
         this.phoneNum = phoneNum;
-        this.profileImgUrl = profileImgUrl; // default from client
+        this.profileImageUrl = profileImageUrl; // default from client
         this.role = role;
     }
 
@@ -65,8 +65,8 @@ public class Member extends BaseEntity {
         this.introduce = introduce;
     }
 
-    public void updateProfileImage(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public void switchDefaultProfileImg() {

@@ -32,8 +32,8 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/posts/**
-          filters:
-            - RewritePath=/api/posts/(?<segment>.*), /$\{segment}
+#          filters:
+#            - RewritePath=/api/posts/(?<segment>.*), /$\{segment}
 
         - id: oauth
           uri: http://localhost:8081

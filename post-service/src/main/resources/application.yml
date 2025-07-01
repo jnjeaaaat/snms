@@ -37,5 +37,7 @@ jwt:
   secret: ${POST_JWT_SIGN_KEY}
   issuer: snms
 
-front:
-  url: http://localhost:3000
+feign:
+  client:
+    member-service:
+      url: http://localhost:8081

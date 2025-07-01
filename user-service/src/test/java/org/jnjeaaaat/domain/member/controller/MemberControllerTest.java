@@ -8,8 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.servlet.http.Cookie;
 import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
 import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
-import org.jnjeaaaat.domain.member.exception.MemberException;
 import org.jnjeaaaat.domain.member.service.MemberService;
+import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +33,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static org.jnjeaaaat.global.cons.FixedData.FIXED_TIME;
+import static org.jnjeaaaat.global.cons.FixedData.TEST_IMAGE_FILE_PATH;
 import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.jnjeaaaat.global.util.UserTestFixture.createTestUser;
 import static org.mockito.Mockito.doReturn;
@@ -107,7 +109,6 @@ class MemberControllerTest {
     @Nested
     @DisplayName("사용자 정보 업데이트")
     class UpdateMemberInfo {
-        LocalDateTime fixedTime = LocalDateTime.of(2025, 6, 18, 12, 0, 0);
 
         UpdateMemberRequest request = new UpdateMemberRequest(
                 "새로운닉네임",
@@ -120,24 +121,27 @@ class MemberControllerTest {
                 "https://s3.amazonaws.com/bucket/image.jpg",
                 false,
                 "첫 자기소개 작성",
-                fixedTime
+                FIXED_TIME
         );
 
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "file",
-                "profile.png",
-                MediaType.IMAGE_PNG_VALUE,
-                Files.readAllBytes(Paths.get("src/test/resources/img/profile.png"))
-        );
+        MockMultipartFile imageFile;
+        MockMultipartFile requestPart;
 
-        MockMultipartFile requestPart = new MockMultipartFile(
-                "request",
-                "",
-                MediaType.APPLICATION_JSON_VALUE,
-                objectMapper.writeValueAsBytes(request)
-        );
+        @BeforeEach
+        void init() throws IOException {
+            imageFile = new MockMultipartFile(
+                    "file",
+                    "profile.png",
+                    MediaType.IMAGE_PNG_VALUE,
+                    Files.readAllBytes(Paths.get(TEST_IMAGE_FILE_PATH))
+            );
 
-        UpdateMemberInfo() throws IOException {
+            requestPart = new MockMultipartFile(
+                    "request",
+                    "",
+                    MediaType.APPLICATION_JSON_VALUE,
+                    objectMapper.writeValueAsBytes(request)
+            );
         }
 
         @Test

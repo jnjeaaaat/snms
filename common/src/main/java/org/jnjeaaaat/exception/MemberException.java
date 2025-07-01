@@ -1,4 +1,4 @@
-package org.jnjeaaaat.domain.member.exception;
+package org.jnjeaaaat.exception;
 
 import org.jnjeaaaat.global.exception.CustomException;
 import org.jnjeaaaat.global.exception.ErrorCode;

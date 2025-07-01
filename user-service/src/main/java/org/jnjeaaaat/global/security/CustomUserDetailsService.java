@@ -3,7 +3,7 @@ package org.jnjeaaaat.global.security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.member.entity.Member;
-import org.jnjeaaaat.domain.member.exception.MemberException;
+import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.domain.member.repository.MemberRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

@@ -21,7 +21,7 @@ dependencies {
     // SMS 서비스 (사용자 인증용)
     implementation 'net.nurigo:sdk:4.2.7'
 
-    // 데이터베이스
+    // db
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -33,10 +33,15 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // openfeign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'io.projectreactor:reactor-test'
+    testImplementation testFixtures(project(':common'))
+
 }
 
 tasks.named('test') {
