@@ -8,9 +8,9 @@ import org.jnjeaaaat.domain.auth.dto.request.*;
 import org.jnjeaaaat.domain.auth.dto.response.SignInResponse;
 import org.jnjeaaaat.domain.auth.dto.response.SignUpResponse;
 import org.jnjeaaaat.domain.auth.dto.response.VerifyCodeResponse;
-import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.domain.auth.service.AuthService;
 import org.jnjeaaaat.domain.auth.service.CoolSmsService;
+import org.jnjeaaaat.exception.AuthException;
 import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -304,7 +304,7 @@ class AuthControllerTest {
                                                     key("validation").value("@NotBlank @ValidPhoneNumber"),
                                                     key("customValidation").value("@ValidPhoneNumber: '-'있을 경우 제거하고 패턴 체크")
                                             ),
-                                    fieldWithPath("profileImgUrl")
+                                    fieldWithPath("profileImageUrl")
                                             .description("기본 프로필 이미지")
                                             .type(STRING)
                                             .attributes(

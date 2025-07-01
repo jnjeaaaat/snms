@@ -24,23 +24,6 @@ import static org.jnjeaaaat.global.constant.CookieCons.COOKIE_NAME;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    // todo: UserSecurityConfig에 permitAll() 추가하고 제거
-    private static final String[] WHITELIST = {
-            "/docs/**", // spring REST docs
-            "/error",
-            "/favicon.ico",
-            "/client/**",
-            "/api/auth/check-uid",
-            "/api/auth/sign-up", // 회원가입
-            "/api/auth/sign-in", // 로그인
-            "/api/auth/send-sms", // 인증번호 발송
-            "/api/auth/oauth/success", // 소셜 로그인 성공
-            "/api/auth/verify-code", // 인증번호 확인
-            "/api/auth/oauth/phone",
-            "/api/posts",
-            "/",
-    };
-
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override

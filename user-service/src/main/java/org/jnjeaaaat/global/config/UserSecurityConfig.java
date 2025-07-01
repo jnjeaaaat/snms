@@ -57,7 +57,8 @@ public class UserSecurityConfig extends BaseSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
 
                         .requestMatchers("/", "/docs/**", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/sign-out").authenticated()
 
                         .requestMatchers("/client/**").permitAll()
 

@@ -24,10 +24,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.jnjeaaaat.global.cons.FixedData.FIXED_TIME;
+import static org.jnjeaaaat.global.cons.FixedData.TEST_IMAGE_FILE_PATH;
 import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -54,8 +55,6 @@ class MemberServiceTest {
     @DisplayName("사용자 정보 업데이트")
     class UpdateMemberMethod {
 
-        LocalDateTime fixedTime = LocalDateTime.of(2025, 6, 18, 12, 0, 0);
-
         UpdateMemberRequest request = new UpdateMemberRequest(
                 "새로운닉네임",
                 "첫 자기소개 작성"
@@ -67,14 +66,14 @@ class MemberServiceTest {
                 "https://s3.amazonaws.com/bucket/image.jpg",
                 false,
                 "첫 자기소개 작성",
-                fixedTime
+                FIXED_TIME
         );
 
         MockMultipartFile imageFile = new MockMultipartFile(
                 "file",
                 "profile.png",
                 MediaType.IMAGE_PNG_VALUE,
-                Files.readAllBytes(Paths.get("src/test/resources/img/profile.png"))
+                Files.readAllBytes(Paths.get(TEST_IMAGE_FILE_PATH))
         );
 
         Member mockMember = createMockMember();
