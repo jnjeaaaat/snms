@@ -3,14 +3,12 @@ package org.jnjeaaaat.domain.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.dto.request.CreatePostRequest;
 import org.jnjeaaaat.domain.dto.response.CreatePostResponse;
 import org.jnjeaaaat.domain.dto.response.PostInfoResponse;
 import org.jnjeaaaat.domain.service.PostClientService;
 import org.jnjeaaaat.domain.service.PostService;
 import org.jnjeaaaat.dto.CustomPageRequest;
-import org.jnjeaaaat.dto.TestDto;
 import org.jnjeaaaat.dto.post.PostsResponse;
 import org.jnjeaaaat.global.validator.annotation.ValidFile;
 import org.springframework.data.domain.PageRequest;
@@ -34,14 +32,6 @@ public class PostController {
 
     private final PostService postService;
     private final PostClientService postClientService; // todo: 테스트용 추후 삭제
-
-    @GetMapping("")
-    public ResponseEntity<TestDto> postTest(HttpServletRequest request) {
-        logInfo(request, "Post Test Success");
-        return ResponseEntity.ok(
-                new TestDto("Post Dto Share Success")
-        );
-    }
 
     @PostMapping("")
     public ResponseEntity<CreatePostResponse> createPost(

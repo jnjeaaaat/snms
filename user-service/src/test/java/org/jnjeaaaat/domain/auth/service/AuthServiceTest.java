@@ -280,7 +280,7 @@ class AuthServiceTest {
                 .password("newEncodedPassword")
                 .nickname("test1")
                 .phoneNum("01012341234")
-                .profileImgUrl("/default.jpg")
+                .profileImageUrl("/default.jpg")
                 .role(MemberRole.ROLE_USER)
                 .build();
 

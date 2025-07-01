@@ -5,8 +5,10 @@ import org.jnjeaaaat.global.security.handler.CustomAuthenticationEntryPoint;
 import org.jnjeaaaat.global.security.jwt.JwtAuthenticationFilter;
 import org.jnjeaaaat.global.security.jwt.JwtFailureFilter;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 public class PostSecurityConfig extends BaseSecurityConfig {
@@ -24,7 +26,9 @@ public class PostSecurityConfig extends BaseSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
 
                         .requestMatchers("/", "/docs/**", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+
+                        .requestMatchers(GET, "/api/posts/**").permitAll()
+                        .requestMatchers(POST, "/api/posts").authenticated()
 
                         .requestMatchers("/client/**").permitAll()
 

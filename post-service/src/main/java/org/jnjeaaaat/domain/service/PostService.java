@@ -79,7 +79,10 @@ public class PostService {
      */
     public PostInfoResponse getPostInfo(UserDetails userDetails, Long postId) {
 
-        Long memberId = Long.parseLong(userDetails.getUsername());
+        log.info("포스팅 정보 조회 요청, postId: {}", postId);
+
+        Long memberId = userDetails != null ?
+                Long.parseLong(userDetails.getUsername()) : null;
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(NOT_FOUND_POST));

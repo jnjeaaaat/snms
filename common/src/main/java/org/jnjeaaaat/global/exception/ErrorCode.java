@@ -46,7 +46,7 @@ public enum ErrorCode {
     INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "예상치 못한 오류 발생"),
 
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 포스트입니다."),
-    POST_NOT_PUBLIC(NOT_FOUND, "공개되지 않은 포스트입니다."),
+    POST_NOT_PUBLIC(FORBIDDEN, "공개되지 않은 포스트입니다."),
 
 
     ;
