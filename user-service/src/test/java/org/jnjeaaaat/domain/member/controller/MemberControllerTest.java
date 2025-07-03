@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
 import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
 import org.jnjeaaaat.domain.member.service.MemberService;
+import org.jnjeaaaat.domain.member.service.RedisCountService;
 import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.global.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +38,9 @@ import static org.jnjeaaaat.global.cons.FixedData.FIXED_TIME;
 import static org.jnjeaaaat.global.cons.FixedData.TEST_IMAGE_FILE_PATH;
 import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.jnjeaaaat.global.util.UserTestFixture.createTestUser;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -60,6 +60,9 @@ class MemberControllerTest {
 
     @MockBean
     MemberService memberService;
+
+    @MockBean
+    RedisCountService redisCountService;
 
     @MockBean
     JwtTokenProvider jwtTokenProvider;
@@ -339,5 +342,162 @@ class MemberControllerTest {
         }
     }
 
+    @Nested
+    @DisplayName("사용자 팔로우 / 언팔로우")
+    class FollowTests {
 
+        @Test
+        @DisplayName("[성공] 사용자 팔로우")
+        void success_follow() throws Exception {
+            //given
+            Long followingId = 2L;
+            doNothing().when(memberService).followMember(createTestUser(), followingId);
+
+            //when
+            //then
+            mockMvc.perform(post("/api/members/follow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andDo(document("members/follow/success",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            pathParameters(
+                                    parameterWithName("followMemberId")
+                                            .description("팔로우 할 사용자 id")
+                                            .attributes(key("type").value("NUMBER"))
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 사용자 팔로우 - 존재하지 않는 계정")
+        void follow_NotFoundMember() throws Exception {
+            //given
+            Long followingId = 2L;
+            doThrow(new MemberException(NOT_FOUND_MEMBER)).when(memberService)
+                    .followMember(createTestUser(), followingId);
+            //when
+            //then
+            mockMvc.perform(post("/api/members/follow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andDo(document("members/follow/not_found_member",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 사용자 팔로우 - 자기 자신을 팔로우")
+        void follow_CannotFollowSelf() throws Exception {
+            //given
+            Long followingId = 1L;
+            doThrow(new MemberException(CANNOT_FOLLOW_SELF)).when(memberService)
+                    .followMember(createTestUser(), followingId);
+            //when
+            //then
+            mockMvc.perform(post("/api/members/follow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andDo(document("members/follow/cannot_self_follow",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 사용자 팔로우 - 이미 팔로우한 사용자")
+        void follow_AlreadyFollowingMember() throws Exception {
+            //given
+            Long followingId = 2L;
+            doThrow(new MemberException(ALREADY_FOLLOWING_MEMBER)).when(memberService)
+                    .followMember(createTestUser(), followingId);
+            //when
+            //then
+            mockMvc.perform(post("/api/members/follow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andDo(document("members/follow/already_following_member",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+        @Test
+        @DisplayName("[성공] 사용자 언팔로우")
+        void success_unfollow() throws Exception {
+            //given
+            Long followingId = 2L;
+            //when
+            //then
+            mockMvc.perform(delete("/api/members/unfollow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andDo(document("members/unfollow/success",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            pathParameters(
+                                    parameterWithName("followMemberId")
+                                            .description("언팔로우 할 사용자 id")
+                                            .attributes(key("type").value("NUMBER"))
+                            )
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 사용자 언팔로우 - 존재하지 않는 계정")
+        void unfollow_NotFoundMember() throws Exception {
+            //given
+            Long followingId = 2L;
+            doThrow(new MemberException(NOT_FOUND_MEMBER)).when(memberService)
+                    .unfollowMember(createTestUser(), followingId);
+            //when
+            //then
+            mockMvc.perform(delete("/api/members/unfollow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andDo(document("members/unfollow/not_found_member",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+        @Test
+        @DisplayName("[실패] 사용자 언팔로우 - 팔로우 기록 없음")
+        void unfollow_NotFoundFollow() throws Exception {
+            //given
+            Long followingId = 2L;
+            doThrow(new MemberException(NOT_FOUND_FOLLOW)).when(memberService)
+                    .unfollowMember(createTestUser(), followingId);
+            //when
+            //then
+            mockMvc.perform(delete("/api/members/unfollow/{followMemberId}", followingId)
+                            .cookie(new Cookie("access_token", "token"))
+                            .with(csrf()))
+                    .andExpect(status().isNotFound())
+                    .andDo(print())
+                    .andDo(document("members/unfollow/not_found_follow",
+                            preprocessRequest(prettyPrint()),
+                            commonResponsePreprocessor,
+                            errorResponseSnippet
+                    ));
+        }
+
+    }
 }

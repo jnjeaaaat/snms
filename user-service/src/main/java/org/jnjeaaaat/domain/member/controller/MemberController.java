@@ -39,28 +39,28 @@ public class MemberController {
         );
     }
 
-    @PostMapping("/follow/{memberId}")
+    @PostMapping("/follow/{followMemberId}")
     public ResponseEntity<Void> followMember(
             HttpServletRequest request,
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long memberId) {
+            @PathVariable Long followMemberId) {
 
         logInfo(request, "사용자 팔로우");
 
-        memberService.followMember(userDetails, memberId);
+        memberService.followMember(userDetails, followMemberId);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/unfollow/{memberId}")
+    @DeleteMapping("/unfollow/{followMemberId}")
     public ResponseEntity<Void> unfollowMember(
             HttpServletRequest request,
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long memberId) {
+            @PathVariable Long followMemberId) {
 
         logInfo(request, "사용자 언팔로우");
 
-        memberService.unfollowMember(userDetails, memberId);
+        memberService.unfollowMember(userDetails, followMemberId);
 
         return ResponseEntity.ok().build();
     }

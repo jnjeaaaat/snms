@@ -100,20 +100,20 @@ public class MemberService {
     /**
      * Follow Member
      *
-     * @param userDetails @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
-     * @param memberId    @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
+     * @param userDetails    @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
+     * @param followMemberId @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
      */
     @Transactional
-    public void followMember(UserDetails userDetails, Long memberId) {
+    public void followMember(UserDetails userDetails, Long followMemberId) {
         Member follower = memberRepository.findById(Long.valueOf(userDetails.getUsername()))
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
-        Member following = memberRepository.findById(memberId)
+        Member following = memberRepository.findById(followMemberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
         validateFollowInfo(follower, following);
 
-        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), memberId, CountType.FOLLOW);
+        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), followMemberId, CountType.FOLLOW);
 
         followRepository.save(
                 Follow.builder()
@@ -136,21 +136,21 @@ public class MemberService {
     /**
      * Unfollow Member
      *
-     * @param userDetails @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
-     * @param memberId    @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
+     * @param userDetails    @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
+     * @param followMemberId @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
      */
     @Transactional
-    public void unfollowMember(UserDetails userDetails, Long memberId) {
+    public void unfollowMember(UserDetails userDetails, Long followMemberId) {
         Member follower = memberRepository.findById(Long.valueOf(userDetails.getUsername()))
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
-        Member following = memberRepository.findById(memberId)
+        Member following = memberRepository.findById(followMemberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
         Follow followInfo = followRepository.findByFollowerAndFollowing(follower, following)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_FOLLOW));
 
-        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), memberId, CountType.FOLLOW);
+        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), followMemberId, CountType.FOLLOW);
 
         followRepository.deleteByFollowerAndFollowing(followInfo.getFollower(), followInfo.getFollowing());
     }
