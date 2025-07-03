@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.member.dto.request.UpdateMemberRequest;
 import org.jnjeaaaat.domain.member.dto.response.UpdateMemberResponse;
+import org.jnjeaaaat.domain.member.entity.Follow;
 import org.jnjeaaaat.domain.member.entity.Member;
-import org.jnjeaaaat.exception.MemberException;
+import org.jnjeaaaat.domain.member.repository.FollowRepository;
 import org.jnjeaaaat.domain.member.repository.MemberRepository;
+import org.jnjeaaaat.domain.member.type.CountType;
+import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.global.storage.StorageService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -27,7 +30,9 @@ import static org.jnjeaaaat.global.storage.FilePathType.MEMBER;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final FollowRepository followRepository;
     private final StorageService storageService;
+    private final RedisCountService redisCountService;
 
     /**
      * Update Member Info
@@ -90,5 +95,63 @@ public class MemberService {
         } else {
             storageService.deleteFile(originProfileUrl);
         }
+    }
+
+    /**
+     * Follow Member
+     *
+     * @param userDetails @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
+     * @param memberId    @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
+     */
+    @Transactional
+    public void followMember(UserDetails userDetails, Long memberId) {
+        Member follower = memberRepository.findById(Long.valueOf(userDetails.getUsername()))
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        Member following = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        validateFollowInfo(follower, following);
+
+        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), memberId, CountType.FOLLOW);
+
+        followRepository.save(
+                Follow.builder()
+                        .follower(follower)
+                        .following(following)
+                        .build()
+        );
+    }
+
+    private void validateFollowInfo(Member follower, Member following) {
+        if (followRepository.existsByFollowerAndFollowing(follower, following)) {
+            throw new MemberException(ALREADY_FOLLOWING_MEMBER);
+        }
+
+        if (follower.getId().equals(following.getId())) {
+            throw new MemberException(CANNOT_FOLLOW_SELF);
+        }
+    }
+
+    /**
+     * Unfollow Member
+     *
+     * @param userDetails @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
+     * @param memberId    @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
+     */
+    @Transactional
+    public void unfollowMember(UserDetails userDetails, Long memberId) {
+        Member follower = memberRepository.findById(Long.valueOf(userDetails.getUsername()))
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        Member following = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        Follow followInfo = followRepository.findByFollowerAndFollowing(follower, following)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_FOLLOW));
+
+        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), memberId, CountType.FOLLOW);
+
+        followRepository.deleteByFollowerAndFollowing(followInfo.getFollower(), followInfo.getFollowing());
     }
 }

@@ -29,6 +29,13 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(NOT_FOUND, "사용자를 찾을 수 없습니다."),
     WRONG_PASSWORD(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
+    CANNOT_FOLLOW_SELF(BAD_REQUEST, "자신을 팔로우 할 수 없습니다."),
+    ALREADY_FOLLOWING_MEMBER(BAD_REQUEST, "이미 팔로우 중인 사용자입니다."),
+    FOLLOW_LIMIT_EXCEEDED(TOO_MANY_REQUESTS, "팔로우 요청이 너무 많습니다. 잠시 후 다시 시도해주세요."),
+    NOT_FOUND_FOLLOW(NOT_FOUND, "팔로우 기록이 없습니다."),
+
+    BLOCK_LIMIT_EXCEEDED(TOO_MANY_REQUESTS, "차단 요청이 너무 많습니다. 잠시 후 다시 시도해주세요."),
+
     ILLEGAL_OAUTH(BAD_REQUEST, "유효하지 않은 소셜 로그인 입니다."),
     NOT_FOUND_SOCIAL_LOGIN(BAD_REQUEST, "소셜 로그인 기록이 없습니다."),
 
