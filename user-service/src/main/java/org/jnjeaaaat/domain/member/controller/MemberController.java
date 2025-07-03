@@ -39,5 +39,31 @@ public class MemberController {
         );
     }
 
+    @PostMapping("/follow/{followMemberId}")
+    public ResponseEntity<Void> followMember(
+            HttpServletRequest request,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long followMemberId) {
+
+        logInfo(request, "사용자 팔로우");
+
+        memberService.followMember(userDetails, followMemberId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/unfollow/{followMemberId}")
+    public ResponseEntity<Void> unfollowMember(
+            HttpServletRequest request,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long followMemberId) {
+
+        logInfo(request, "사용자 언팔로우");
+
+        memberService.unfollowMember(userDetails, followMemberId);
+
+        return ResponseEntity.ok().build();
+    }
+
 
 }
