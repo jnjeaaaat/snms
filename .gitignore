@@ -42,3 +42,6 @@ docker/.env
 
 ## docs ##
 src/main/resources/static/docs
+
+## Firebase ##
+firebase-service-account.json

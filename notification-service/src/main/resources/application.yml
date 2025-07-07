@@ -1,0 +1,49 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3309/notificationdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${LOCAL_MYSQL_USERNAME}
+    password: ${LOCAL_MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: notification-consumer
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      missing-topics-fatal: false
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+cloud:
+  aws:
+    s3:
+      bucket: mysnmsbucket
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${NOTIFICATION_AWS_S3_ACCESS_KEY}
+        secret-key: ${NOTIFICATION_AWS_S3_SECRET_KEY}
+      stack:
+        auto: false
+
+jwt:
+  secret: ${NOTIFICATION_JWT_SIGN_KEY}
+  issuer: snms

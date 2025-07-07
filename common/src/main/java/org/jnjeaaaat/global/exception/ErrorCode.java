@@ -55,6 +55,8 @@ public enum ErrorCode {
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 포스트입니다."),
     POST_NOT_PUBLIC(FORBIDDEN, "공개되지 않은 포스트입니다."),
 
+    NOT_FOUND_FCM_TOKEN(NOT_FOUND, "FCM 토큰을 찾을 수 없습니다."),
+
 
     ;
 
