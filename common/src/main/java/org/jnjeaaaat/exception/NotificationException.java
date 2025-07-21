@@ -8,7 +8,7 @@ public class NotificationException extends CustomException {
         super(errorCode);
     }
 
-    public NotificationException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
+    public NotificationException(ErrorCode errorCode, String errorMessage) {
+        super(errorCode, errorMessage);
     }
 }

@@ -39,15 +39,15 @@ public class MemberController {
         );
     }
 
-    @PostMapping("/follow/{followMemberId}")
+    @PostMapping("/follow/{followingMemberId}")
     public ResponseEntity<Void> followMember(
             HttpServletRequest request,
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long followMemberId) {
+            @PathVariable Long followingMemberId) {
 
         logInfo(request, "사용자 팔로우");
 
-        memberService.followMember(userDetails, followMemberId);
+        memberService.followMember(userDetails, followingMemberId);
 
         return ResponseEntity.ok().build();
     }

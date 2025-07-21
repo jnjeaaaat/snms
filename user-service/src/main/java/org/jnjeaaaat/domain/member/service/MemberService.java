@@ -10,6 +10,10 @@ import org.jnjeaaaat.domain.member.repository.FollowRepository;
 import org.jnjeaaaat.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.domain.member.type.CountType;
 import org.jnjeaaaat.exception.MemberException;
+import org.jnjeaaaat.global.event.NotificationEvent;
+import org.jnjeaaaat.global.event.dto.FollowEventPayload;
+import org.jnjeaaaat.global.event.type.EventType;
+import org.jnjeaaaat.global.kafka.producer.EventProducer;
 import org.jnjeaaaat.global.storage.StorageService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.jnjeaaaat.global.constant.EventCons.USER_EVENT_TOPIC;
+import static org.jnjeaaaat.global.constant.EventCons.USER_SERVICE_MODULE;
 import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.jnjeaaaat.global.storage.FilePathType.MEMBER;
 
@@ -33,6 +39,7 @@ public class MemberService {
     private final FollowRepository followRepository;
     private final StorageService storageService;
     private final RedisCountService redisCountService;
+    private final EventProducer eventProducer;
 
     /**
      * Update Member Info
@@ -101,25 +108,37 @@ public class MemberService {
      * Follow Member
      *
      * @param userDetails    @AuthenticationPrincipal 엑세스 토큰 값으로 추출한 User 객체
-     * @param followMemberId @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
+     * @param followingMemberId @PathVariable 값으로 userDetails.getUsername() 비교를 위한 Member PK
      */
     @Transactional
-    public void followMember(UserDetails userDetails, Long followMemberId) {
+    public void followMember(UserDetails userDetails, Long followingMemberId) {
         Member follower = memberRepository.findById(Long.valueOf(userDetails.getUsername()))
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
-        Member following = memberRepository.findById(followMemberId)
+        Member following = memberRepository.findById(followingMemberId)
                 .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
 
         validateFollowInfo(follower, following);
 
-        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), followMemberId, CountType.FOLLOW);
+        redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), followingMemberId, CountType.FOLLOW);
 
         followRepository.save(
                 Follow.builder()
                         .follower(follower)
                         .following(following)
                         .build()
+        );
+
+        // kafka event publish
+        NotificationEvent<FollowEventPayload> event = NotificationEvent.of(
+                FollowEventPayload.of(follower.getUid(), following.getId()),
+                EventType.FOLLOW,
+                USER_SERVICE_MODULE
+        );
+
+        eventProducer.send(
+                USER_EVENT_TOPIC,
+                event
         );
     }
 
