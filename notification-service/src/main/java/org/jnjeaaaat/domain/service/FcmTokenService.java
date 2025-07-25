@@ -1,6 +1,9 @@
 package org.jnjeaaaat.domain.service;
 
-import com.google.firebase.messaging.*;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jnjeaaaat.domain.dto.request.FcmTokenRegisterRequest;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.jnjeaaaat.global.exception.ErrorCode.INTERNAL_ERROR;
 import static org.jnjeaaaat.global.exception.ErrorCode.NOT_FOUND_FCM_TOKEN;
@@ -59,35 +63,39 @@ public class FcmTokenService {
         fcmToken.deleteToken();
     }
 
-    public void send(Long targetUserId,
+    public void send(Long targetMemberId,
                      String title,
                      String body,
                      LocalDateTime createdAt,
                      Long notificationId) throws FirebaseMessagingException {
-        FcmToken fcmToken = fcmTokenRepository.findById(targetUserId)
-                .orElseThrow(() -> new NotificationException(NOT_FOUND_FCM_TOKEN));
 
-        String token = fcmToken.getToken();
+        List<FcmToken> fcmTokens = fcmTokenRepository
+                .findAllByMemberIdAndTokenIsNotNull(targetMemberId);
 
-        Message message = Message.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build())
-                .setToken(token)
-                .putData("title", title)
-                .putData("body", body)
-                .putData("createdAt", createdAt.toString())
-                .putData("notificationId", notificationId.toString())
-                .build();
+        for (FcmToken fcmToken : fcmTokens) {
+            String token = fcmToken.getToken();
 
-        try {
-            String response = firebaseMessaging.send(message);
-            log.info("Successfully sent FCM message to userId: {}. Response: {}", targetUserId, response);
-        } catch (FirebaseMessagingException e) {
-            throw new NotificationException(INTERNAL_ERROR, e.getMessage());
+            Message message = Message.builder()
+                    .setNotification(Notification.builder()
+                            .setTitle(title)
+                            .setBody(body)
+                            .build())
+                    .setToken(token)
+                    .putData("title", title)
+                    .putData("body", body)
+                    .putData("createdAt", createdAt.toString())
+                    .putData("notificationId", notificationId.toString())
+                    .build();
+
+            try {
+                String response = firebaseMessaging.send(message);
+                log.info("Successfully sent FCM message to userId: {}. Response: {}", targetMemberId, response);
+            } catch (FirebaseMessagingException e) {
+                throw new NotificationException(INTERNAL_ERROR, e.getMessage());
+            }
+
+            log.info("FCM 알림 전송 요청: targetMemberId={}, title={}, body={}", targetMemberId, title, body);
         }
 
-        log.info("FCM 알림 전송 요청: targetUserId={}, title={}, body={}", targetUserId, title, body);
     }
 }

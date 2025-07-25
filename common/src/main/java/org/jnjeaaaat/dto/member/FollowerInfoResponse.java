@@ -3,10 +3,10 @@ package org.jnjeaaaat.dto.member;
 import lombok.Builder;
 
 @Builder
-public record MemberInfoResponse(
-        Long id,
+public record FollowerInfoResponse(
+        Long followerId,
         String uid,
-        String nickname,
         String profileImageUrl
 ) {
+
 }

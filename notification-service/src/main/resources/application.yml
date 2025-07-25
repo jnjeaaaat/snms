@@ -47,3 +47,8 @@ cloud:
 jwt:
   secret: ${NOTIFICATION_JWT_SIGN_KEY}
   issuer: snms
+
+feign:
+  client:
+    member-service:
+      url: http://localhost:8081

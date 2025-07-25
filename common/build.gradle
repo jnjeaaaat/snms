@@ -23,6 +23,9 @@ dependencies {
     // Feign (공통 HTTP 클라이언트)
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"

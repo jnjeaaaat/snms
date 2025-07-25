@@ -9,6 +9,7 @@ import org.jnjeaaaat.domain.member.entity.Member;
 import org.jnjeaaaat.domain.member.repository.FollowRepository;
 import org.jnjeaaaat.domain.member.repository.MemberRepository;
 import org.jnjeaaaat.domain.member.type.CountType;
+import org.jnjeaaaat.dto.member.FollowerInfoResponse;
 import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.global.event.NotificationEvent;
 import org.jnjeaaaat.global.event.dto.FollowEventPayload;
@@ -22,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -172,5 +174,26 @@ public class MemberService {
         redisCountService.checkCount(Long.valueOf(userDetails.getUsername()), followMemberId, CountType.FOLLOW);
 
         followRepository.deleteByFollowerAndFollowing(followInfo.getFollower(), followInfo.getFollowing());
+    }
+
+    public List<FollowerInfoResponse> getFollowers(UserDetails userDetails, Long targetMemberId) {
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new MemberException(NOT_FOUND_MEMBER));
+
+        Long memberId = userDetails != null ?
+                Long.parseLong(userDetails.getUsername()) : null; // 현재 로그인한 멤버의 ID
+
+        return followRepository.findAllByFollowing(targetMember)
+                .stream()
+                .map(follow -> {
+                    Member follower = follow.getFollower();
+
+                    return FollowerInfoResponse.builder()
+                            .followerId(follower.getId())
+                            .uid(follower.getUid())
+                            .profileImageUrl(follower.getProfileImageUrl())
+                            .build();
+                })
+                .toList();
     }
 }

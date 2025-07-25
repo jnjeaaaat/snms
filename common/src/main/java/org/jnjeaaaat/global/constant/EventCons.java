@@ -10,4 +10,5 @@ public class EventCons {
     public static final String POST_EVENT_TOPIC = "post-events";
 
     public static final String FOLLOW_EVENT_BODY_FORMAT = "%s님이 당신을 팔로우했습니다.";
+    public static final String POST_CREATED_EVENT_BODY_FORMAT = "%s님이 새로운 포스팅을 작성했습니다.";
 }

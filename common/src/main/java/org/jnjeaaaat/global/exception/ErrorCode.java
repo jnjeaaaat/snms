@@ -57,6 +57,7 @@ public enum ErrorCode {
 
     NOT_FOUND_FCM_TOKEN(NOT_FOUND, "FCM 토큰을 찾을 수 없습니다."),
 
+    NOT_FOUND_NOTIFICATION(NOT_FOUND, "알림을 찾을 수 없습니다."),
 
     ;
 

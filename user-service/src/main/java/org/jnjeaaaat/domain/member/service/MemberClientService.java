@@ -27,6 +27,7 @@ public class MemberClientService {
         return memberRepository.findById(memberId)
                 .map(member -> MemberInfoResponse.builder()
                         .id(member.getId())
+                        .uid(member.getUid())
                         .nickname(member.getNickname())
                         .profileImageUrl(member.getProfileImageUrl())
                         .build())
