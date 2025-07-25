@@ -13,6 +13,10 @@ import org.jnjeaaaat.exception.MemberException;
 import org.jnjeaaaat.exception.PostException;
 import org.jnjeaaaat.global.client.excpetion.ExternalApiException;
 import org.jnjeaaaat.global.client.member.MemberClient;
+import org.jnjeaaaat.global.event.NotificationEvent;
+import org.jnjeaaaat.global.event.dto.PostCreatedEventPayload;
+import org.jnjeaaaat.global.event.type.EventType;
+import org.jnjeaaaat.global.kafka.producer.EventProducer;
 import org.jnjeaaaat.global.storage.StorageService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.jnjeaaaat.global.constant.EventCons.POST_EVENT_TOPIC;
+import static org.jnjeaaaat.global.constant.EventCons.POST_SERVICE_MODULE;
 import static org.jnjeaaaat.global.exception.ErrorCode.*;
 import static org.jnjeaaaat.global.storage.FilePathType.POST;
 
@@ -32,6 +38,7 @@ public class PostService {
     private final MemberClient memberClient;
     private final PostRepository postRepository;
     private final StorageService storageService;
+    private final EventProducer eventProducer;
 
     /**
      * 포스팅 생성
@@ -62,6 +69,22 @@ public class PostService {
                 storageService.uploadImageList(POST, savedPost.getId(), postImages);
 
         savedPost.setPostImageUrls(postImageUrls);
+
+        // Notification event 발행
+        NotificationEvent<PostCreatedEventPayload> event = NotificationEvent.of(
+                PostCreatedEventPayload.of(
+                        savedPost.getId(),
+                        savedPost.getMemberId(),
+                        getMemberInfo(savedPost.getMemberId()).uid()
+                ),
+                EventType.POST_CREATED,
+                POST_SERVICE_MODULE
+        );
+
+        eventProducer.send(
+                POST_EVENT_TOPIC,
+                event
+        );
 
         return CreatePostResponse.fromEntity(savedPost);
     }
