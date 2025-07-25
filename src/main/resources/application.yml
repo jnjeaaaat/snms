@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ${FRONT_URL}
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "Location"
+            allowCredentials: true
+      routes:
+        - id: user-service-auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+
+        - id: user-service-members
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/members/**
+
+        - id: post-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/posts/**
+#          filters:
+#            - RewritePath=/api/posts/(?<segment>.*), /$\{segment}
+
+        - id: oauth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/oauth2/**
+
+        - id: oauth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/login/oauth2/**
+
+        - id: notification-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/notifications/**

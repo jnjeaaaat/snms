@@ -1,0 +1,46 @@
+[[Auth-API]]
+== Auth API
+
+[[회원가입]]
+=== [POST] /api/auth/sign-up
+
+[[회원가입Request]]
+==== `Request`
+operation::auth/sign-up/success/[snippets='http-request']
+operation::auth/sign-up/success/[snippets='request-fields']
+
+[[회원가입SuccessResponse]]
+==== `Success Response`
+operation::auth/sign-up/success/[snippets='http-response,response-fields']
+
+[[회원가입FailureResponse]]
+==== `Failure Response`
+===== `Duplicated Email`
+operation::auth/sign-up/duplicated_uid/[snippets='http-response']
+
+===== `Unmatched Password`
+operation::auth/sign-up/unmatched_password/[snippets='http-response']
+
+operation::auth/sign-up/duplicated_uid/[snippets='response-fields']
+
+[[로컬로그인]]
+=== [POST] /api/auth/sign-in
+
+[[로컬로그인Request]]
+==== `Request`
+operation::auth/sign-in/success/[snippets='http-request']
+operation::auth/sign-in/success/[snippets='request-fields']
+
+[[로컬로그인SuccessResponse]]
+==== `Success Response`
+operation::auth/sign-in/success/[snippets='http-response,response-fields']
+
+[[로컬로그인FailureResponse]]
+==== `Failure Response`
+===== `Duplicated Email`
+operation::auth/sign-in/not_found_member/[snippets='http-response']
+
+===== `Unmatched Password`
+operation::auth/sign-in/wrong_password/[snippets='http-response']
+
+operation::auth/sign-up/duplicated_uid/[snippets='response-fields']
