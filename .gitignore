@@ -36,12 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-## env ###
-docker/.env
-**/env.properties
-
-## docs ##
-src/main/resources/static/docs
-
-## Firebase ##
-firebase-service-account.json
+### yml ###
+application.yml
